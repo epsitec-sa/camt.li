@@ -4,7 +4,9 @@
   "description": "ISO 20022 camt.05x inspection tool for end-users and support team.",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "babel --quiet --out-dir lib src",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "chokidar \"src/**/*.js\" -c \"npm run compile\""
   },
   "keywords": [
     "iso-20022",
@@ -14,6 +16,9 @@
   "license": "MIT",
   "devDependencies": {
     "babel-env": "^1.3.0",
+    "babel-preset-es2015": "^6.9.0",
+    "chokidar": "^1.5.1",
+    "chokidar-cli": "^1.2.0",
     "generic-js-env": "^1.6.1"
   }
 }
