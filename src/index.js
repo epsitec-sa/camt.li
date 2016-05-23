@@ -104,10 +104,28 @@ ${details}
 </li>`;
 }
 
+function getBalanceSummary (xml) {
+  let output = '';
+  const cd = xml.match (/<Cd>(\w+)<\/Cd>/);
+  const amount = xml.match (/<Amt Ccy="(...)">(\d+\.\d+)<\/Amt/);
+  const date = getDate (xml, '<Dt>');
+  if (cd) {
+    switch (cd[1]) {
+      case 'OPBD':
+        output += `<div>Solde d'ouverture: ${amount[2]} ${amount[1]} (${date})</div>`;
+        break;
+      case 'CLBD':
+        output += `<div>Solde de clôture: ${amount[2]} ${amount[1]} (${date})</div>`;
+        break;
+    }
+  }
+  return output;
+}
+
 function getEntriesSummary (xml) {
   let count = 0;
-  let start = 0;
   let output = '<ul>';
+  let start = 0;
   while (true) {
     start = xml.indexOf ('<Ntry>', start);
     if (start < 0) {
@@ -121,6 +139,20 @@ function getEntriesSummary (xml) {
     const entry = xml.substring (start, end);
     output += getEntrySummary (entry);
     count++;
+  }
+  start = 0;
+  while (true) {
+    start = xml.indexOf ('<Bal>', start);
+    if (start < 0) {
+      break;
+    }
+    start += 5;
+    let end = xml.indexOf ('</Bal>', start);
+    const balance = getBalanceSummary (xml.substring (start, end));
+    if (balance && balance.length > 0) {
+      output += balance;
+      count++;
+    }
   }
   output += '</ul>';
   return count && output;
