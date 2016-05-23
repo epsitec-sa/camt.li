@@ -67,8 +67,8 @@ function getDetailsSummary (xml) {
   return `<li>
 <div>Montant: <strong>${amount[2]} ${amount[1]}</strong></div>
 <div>Mouvement: ${credit ? credit[1] : '-'}</div>
-<div>Débiteur: ${debtorName ? debtorName[1] : '-'}</div>
-<div>Référence: ${reference ? reference[1] : '-'}</div>
+<div>Débiteur: ${debtorName ? escapeXml (debtorName[1]) : '-'}</div>
+<div>Référence: ${reference ? escapeXml (reference[1]) : '-'}</div>
 <div>Frais: ${charges ? `${charges[2]} ${charges[1]}` : '-'}</div>
 </li>`;
 }
@@ -135,7 +135,7 @@ function getXmlCamt53V4Report (title, xml) {
   const transactions = getEntriesSummary (xml);
   let output = `
 <h1>Fichier camt.053 (V4)</h1>
-<div>Fichier: ${title}</div>
+<div>Fichier: ${escapeXml (title)}</div>
 <div>Date de création: ${getCreationDateTime (xml)}</div>
 <div>Compte client: ${getCustomerAccount (xml)}</div>`;
   if (transactions) {
@@ -149,7 +149,7 @@ function getXmlCamt54V4Report (title, xml) {
   const transactions = getEntriesSummary (xml);
   let output = `
 <h1>Fichier camt.054 (V4)</h1>
-<div>Fichier: ${title}</div>
+<div>Fichier: ${escapeXml (title)}</div>
 <div>Date de création: ${getCreationDateTime (xml)}</div>
 <div>Compte client: ${getCustomerAccount (xml)}</div>`;
   if (transactions) {
