@@ -29,24 +29,25 @@ function handleFileSelect (evt) {
   const files = evt.dataTransfer.files;
   const output = document.getElementById ('list');
 
-  files.forEarch (xml => {
-      if (xml.type !== 'text/xml') {
-        return;
-      }
-      const li = document.createElement ('li');
-      output.insertBefore (li, null);
-      const reader = new FileReader ();
-      reader.onload = e => {
-          li.innerHTML = '<strong>'.concat (
-            escape (xml.name), '</strong>',
-            ' (', xml.type || 'n/a', ') - ',
-            xml.size, ' bytes',
-            '<div>',
-            getXmlReport (e.target.result),
-            '</div>');
-        };
-      reader.readAsText (xml);
-    });
+  for (var i = 0; i < files.length; i++) {
+    const xml = files[i];
+    if (xml.type !== 'text/xml') {
+      return;
+    }
+    const li = document.createElement ('li');
+    output.insertBefore (li, null);
+    const reader = new FileReader ();
+    reader.onload = e => {
+        li.innerHTML = '<strong>'.concat (
+          escape (xml.name), '</strong>',
+          ' (', xml.type || 'n/a', ') - ',
+          xml.size, ' bytes',
+          '<div>',
+          getXmlReport (e.target.result),
+          '</div>');
+      };
+    reader.readAsText (xml);
+  }
 }
 
 function handleDragOver (evt) {
