@@ -2,7 +2,7 @@
   "name": "camt.li",
   "version": "1.0.0",
   "description": "ISO 20022 camt.05x inspection tool for end-users and support team.",
-  "main": "index.html",
+  "main": "lib/index.html",
   "scripts": {
     "compile": "babel --quiet --out-dir lib src",
     "test": "echo \"Error: no test specified\" && exit 1",
