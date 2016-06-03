@@ -1,34 +1,79 @@
-﻿<!DOCTYPE html>
-<html>
-  <head>
-    <title>Analyse de fichier ISO-20022</title>
-    <style>
-      body {
-          font-family: Helvetica, Arial;
-          font-size: 100%;
-      }
-      ul {
-          color: black;
-          font-size: 100%;
-      }
-      .drop {
-          color: white;
-          background-color: mediumseagreen;
-          font-size: 200%;
-          width: 100%;
-          height: 240px;
-          line-height: 240px;
-          border-radius: 4px;
-          text-align: center;
-      }
-    </style>
-  </head>
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Analyse de fichier camt ISO-20022 | Un outil créer et offert par Crésus, les logiciels de gestion</title>
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,700,900' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    
+    <link rel="stylesheet" href="css/style.css" />
+        
+</head>
   <body>
-    <h1>Analyse de fichiers camt ISO-20022</h1>
-    <div id="drop" class="drop">Glissez le fichier à analyser ici...</div>
-    <div>
-    <ul id="list"></ul>
-    </div>
+    
+    <header>
+      <div class="row">
+        <div class="columns small-12">
+          <a href="http://www.cresus.ch" target="_blank" title="Crésus, les logiciels de gestion" class="logo"><img src="images/cresus-logo.png" /></a>
+          <div class="wrap" style="float: right;">
+            <div class="language" style="float: right;">
+              <a href="#" title="français" class="active">FR</a> | <a href="#" title="deutch" class="">DE</a>
+            </div>
+            <a href="http://www.cresus.ch" target="_blank" title="Crésus, les logiciels de gestion" class="download" style="display: block; float: right;">Test gratuit des logiciels Crésus <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+    </header>
+    
+    <section class="tools">
+      <div class="row">
+        <div class="columns small-12">
+          <p class="lead">Lisez facilement vos fichiers camt</p>
+          <p class="sub-title">ISO-20022</p>
+          <p>Un outil créé et offert par Crésus, les logiciels de gestion</p>
+          <div id="drop" class="drop center">
+            <i class="fa fa-arrow-circle-down" aria-hidden="true"></i>
+            <span>Glissez le fichier à analyser ici</span>
+          </div>
+          <p class="center note">Glissez votre fichier camt dans la zone ci-dessus pour en lire le contenu !</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="share">
+      <div class="row">
+        <div class="columns small-12">
+          <p class="center">
+            PARTAGER CETTE PAGE
+            <a href="https://www.facebook.com/dialog/feed?app_id=1746624865622727&link=http://camt.li&picture=https://aboutme.imgix.net/background/pierre.arnaud_1349601366_78.jpg&name=Analyse+camt&caption=ISO+20022&description=Comment+devenir+un+utilisateur+heureux." class="facebook sharebutton" target="_blank"><i class="fa fa-facebook-official" aria-hidden="true"></i></a>
+            <a href="https://twitter.com/intent/tweet?text=Lisez+vos+fichiers+ISO-20022+&via=epsitec&url=http://camt.li" class="twitter sharebutton" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+            <a href="https://plus.google.com/share?url=camt.li" class="googleplus sharebutton" target="_blank"><i class="fa fa-google-plus " aria-hidden="true"></i></a>
+          </p>
+        </div>
+      </div>
+    </section>
+          
+    <footer>
+      <div class="row">
+        <div class="columns small-12">
+          <div class="boxes center">
+            <p style="font-size: 1.5em; "><span class="bolder">Crésus</span>, pionnier du trafic des paiements ISO-20022</p>
+            <img src="images/box-fr.png" alt="box-fr" />
+          </div>
+          
+          <div class="wrapper" id="list" style="display: none;">
+            <!-- CONTENU DU DOC DROPÉ -->
+          </div>
+          
+          <div class="wrap">
+            <a href="http://www.cresus.ch" target="_blank" title="Crésus, les logiciels de gestion" class="logo"><img src="images/cresus-logo.png" /></a>
+            <p class="desclamer"><strong>Limitation de responsabilité:</strong> Cette page est fournie à titre gracieux par Epsitec SA. Epsitec SA ne garantit pas l'exactitude des données présentées et ne saurait être tenue pour responsable de quoi que ce soit découlant de l’utilisation de cette page. De plus, Epsitec SA n'a pas l'intention et ne s'engage d'aucune manière à actualiser ou à adapter cette page aux évolutions.</p>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    
     <script src="index.js"></script>
   </body>
 </html>
