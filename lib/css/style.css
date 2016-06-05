@@ -21,6 +21,11 @@ body {
   background-size: 100% auto;
   color: #fff;
 }
+
+tr {
+  vertical-align: top;
+}
+
 .row {
   max-width: 1280px;
   margin: 0px auto;
@@ -166,7 +171,7 @@ article h2 {
   text-transform: uppercase;
   color: #ccc;
   display: block;
-  width: 50%;
+  width: 70%;
   margin: 2em auto .5em auto;
 }
   
@@ -192,8 +197,13 @@ article table tbody tr:nth-child(odd) {
 }
 
 article table.transaction {
-  width: 50%;
+  width: 70%;
   margin: 0px auto;
+  margin-bottom: 2em;
+}
+
+article table.details {
+  width: 60%;
 }
 
 article table.transaction caption {
@@ -201,8 +211,6 @@ article table.transaction caption {
 }
 
 .first-detail {
-  height: 60px;
-  vertical-align: bottom;
 }
 
 .bold {

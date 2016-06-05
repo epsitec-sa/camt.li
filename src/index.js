@@ -76,31 +76,46 @@ function getDetailsSummary (xml) {
   const remittanceInformation = xml.match (/<RmtInf>(.+)<\/RmtInf>/);
   const debtorFinName = financialInstitution && financialInstitution[1].match (/<Nm>([a-zA-Z0-9_\-.:;+/ ]*)</);
   const reference = remittanceInformation && remittanceInformation[1].match (/<Ref>(.*)<\/Ref>/);
+  
+  if ((!debtorName) && (!reference) && (!debtorFinName)) {
+    return '';
+  }
+
+  const debtorAccount = xml.match (/<DbtrAcct><Id><IBAN>([A-Z0-9]+)</);
+  const debtorBank1 = debtorName ? escapeXml (debtorName[1]) : '';
+  const debtorBank2 = debtorAccount ? debtorAccount[1] : '';
+  const debtorDetails = debtorBank1.length ? (debtorBank1 + (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : ''))
+                                           : (debtorBank2.length ? formatIBAN (debtorBank2) : '-');
+
   return `
-<tr class="first-detail">
-  <td>Mouvement:</td>
-  <td>${credit ? credit[1] : '-'}</td>
-</tr>
-<tr>
-  <td>Débiteur:</td>
-  <td>${debtorName ? escapeXml (debtorName[1]) : '-'}</td>
-</tr>
-<tr>
-  <td>Institut financier:</td>
-  <td>${debtorFinName ? escapeXml (debtorFinName[1]) : '-'}</td>
-</tr>
-<tr>
-  <td>Référence:</td>
-  <td>${reference ? escapeXml (reference[1]) : '-'}</td>
-</tr>
-<tr>
-  <td>Frais:</td>
-  <td class="align-right">${charges ? `${charges[2]} ${charges[1]}` : '-'}</td>
-</tr>
-<tr>
-  <td>Montant:</td>
-  <td class="bold align-right">${amount[2]} ${amount[1]}</td>
-</tr>
+  </tbody>
+</table>
+<table cellpadding="0" cellspacing="0" class="transaction details">
+  <tbody>
+    <tr class="first-detail">
+      <td>Mouvement:</td>
+      <td class="align-right">${credit ? credit[1] : '-'}</td>
+    </tr>
+    <tr>
+      <td>Débiteur:</td>
+      <td class="align-right">${debtorDetails}</td>
+    </tr>
+    <tr>
+      <td>Institut financier:</td>
+      <td class="align-right">${debtorFinName ? escapeXml (debtorFinName[1]) : '-'}</td>
+    </tr>
+    <tr>
+      <td>Référence:</td>
+      <td class="align-right">${reference ? escapeXml (reference[1]) : '-'}</td>
+    </tr>
+    <tr>
+      <td>Frais:</td>
+      <td class="align-right">${charges ? `${charges[2]} ${charges[1]}` : '-'}</td>
+    </tr>
+    <tr>
+      <td>Montant:</td>
+      <td class="bold align-right">${amount[2]} ${amount[1]}</td>
+    </tr>
 `;
 }
 
