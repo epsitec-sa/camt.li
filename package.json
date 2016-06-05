@@ -4,7 +4,7 @@
   "description": "ISO 20022 camt.05x inspection tool for end-users and support team.",
   "main": "lib/index.html",
   "scripts": {
-    "compile": "babel --quiet --out-dir lib src",
+    "compile": "babel --out-dir lib src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "chokidar \"src/**/*.js\" -c \"npm run compile\""
   },

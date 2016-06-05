@@ -18,7 +18,7 @@ body {
   margin: 0px;
   background: #005187;
   background: url('../images/swiss-mountains2.jpg') no-repeat top center #005187;
-  background-size: cover;
+  background-size: 100% auto;
   color: #fff;
 }
 .row {
@@ -105,6 +105,7 @@ p.sub-title {
   border:2px solid #fff;
   font-size: 200%;
   width: 60%;
+  min-width: fit-content;
   line-height: 120px;
   text-align: center;
   border-radius: 200px;
@@ -118,6 +119,10 @@ p.sub-title {
   border:2px solid #005187;
   background: #fff;
   cursor: alias;
+}
+.drop span {
+  margin-left: 120px;
+  margin-right: 20px;
 }
 .drop i {
   position: absolute;
