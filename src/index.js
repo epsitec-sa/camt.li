@@ -14,6 +14,17 @@ function escapeXml (unsafe) {
     });
 }
 
+function splitLongLine (text, length) {
+  let output = '';
+  while (text.length > length) {
+    output += text.substring (0, length);
+    output += '<br/>';
+    text = text.substring (40); 
+  }
+  output += text;
+  return output;
+}
+
 /******************************************************************************/
 
 const xsdCamt53V4 = 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.04';
@@ -61,17 +72,22 @@ function getDetailsSummary (xml) {
   const charges = xml.match (/<TtlChrgsAndTaxAmt Ccy="(...)">(\d+\.\d+)</);
   const credit = xml.match (/<CdtDbtInd>([A-Z]+)</);
   const financialInstitution = xml.match (/<FinInstnId>(.+)<\/FinInstnId>/);
+  const debtorName = xml.match (/<RltdPties><Dbtr><Nm>([^<]*)<\/Nm>/);
   const remittanceInformation = xml.match (/<RmtInf>(.+)<\/RmtInf>/);
-  const debtorName = financialInstitution && financialInstitution[1].match (/<Nm>([a-zA-Z0-9_\-.:;+/ ]*)</);
+  const debtorFinName = financialInstitution && financialInstitution[1].match (/<Nm>([a-zA-Z0-9_\-.:;+/ ]*)</);
   const reference = remittanceInformation && remittanceInformation[1].match (/<Ref>(.*)<\/Ref>/);
   return `
-<tr>
+<tr class="first-detail">
   <td>Mouvement:</td>
   <td>${credit ? credit[1] : '-'}</td>
 </tr>
 <tr>
   <td>Débiteur:</td>
   <td>${debtorName ? escapeXml (debtorName[1]) : '-'}</td>
+</tr>
+<tr>
+  <td>Institut financier:</td>
+  <td>${debtorFinName ? escapeXml (debtorFinName[1]) : '-'}</td>
 </tr>
 <tr>
   <td>Référence:</td>
@@ -111,11 +127,11 @@ function getEntrySummary (xml) {
     details += getDetailsSummary (xml.substring (start, end));
   }
   
-  const title = infos ? infos[1] : '-';
+  const title = splitLongLine (infos ? infos[1] : '-', 40);
   
   let html = `
 <table cellpadding="0" cellspacing="0" class="transaction">
-  <caption style="text-align: left;">
+  <caption>
     <h3>${title}</h3>
   </caption>
   <tbody>
@@ -157,7 +173,7 @@ function getBalanceSummary (xml, output) {
     switch (cd[1]) {
       case 'OPBD':
         output.open = `
-<table cellpadding="0" cellspacing="0" class="solde_ouverture" style="font-size: 1.5em;">
+<table cellpadding="0" cellspacing="0" class="balance-open">
   <tr>
     <td>Solde d'ouverture (${date})</td>
     <td class="bold align-right">${amount[2]} ${amount[1]}</td>
@@ -166,7 +182,7 @@ function getBalanceSummary (xml, output) {
         break;
       case 'CLBD':
         output.close = `
-<table cellpadding="0" cellspacing="0" class="solde_fermeture" style="font-size: 1.5em;">
+<table cellpadding="0" cellspacing="0" class="balance-close">
 <tr>
   <td>Solde de clôture (${date})</td>
   <td class="bold align-right">${amount[2]} ${amount[1]}</td>

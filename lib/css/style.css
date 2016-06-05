@@ -196,6 +196,15 @@ article table.transaction {
   margin: 0px auto;
 }
 
+article table.transaction caption {
+  text-align: left;
+}
+
+.first-detail {
+  height: 60px;
+  vertical-align: bottom;
+}
+
 .bold {
   font-weight: 700;
 }
@@ -223,6 +232,10 @@ footer {
   background: rgba(0, 0, 0, 0.3);
   position: relative;
   padding: 50px 0px;
+}
+
+.balance-open, .balance-close {
+  font-size: 1.5em;
 }
 
 .boxes {
