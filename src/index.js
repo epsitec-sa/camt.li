@@ -93,27 +93,27 @@ function getDetailsSummary (xml) {
 <table cellpadding="0" cellspacing="0" class="transaction details">
   <tbody>
     <tr class="first-detail">
-      <td>Mouvement:</td>
+      <td>${T.movement}</td>
       <td class="align-right">${credit ? credit[1] : '-'}</td>
     </tr>
     <tr>
-      <td>Débiteur:</td>
+      <td>${T.debtor}</td>
       <td class="align-right">${debtorDetails}</td>
     </tr>
     <tr>
-      <td>Institut financier:</td>
+      <td>${T.finInstitute}</td>
       <td class="align-right">${debtorFinName ? escapeXml (debtorFinName[1]) : '-'}</td>
     </tr>
     <tr>
-      <td>Référence:</td>
+      <td>${T.reference}</td>
       <td class="align-right">${reference ? escapeXml (reference[1]) : '-'}</td>
     </tr>
     <tr>
-      <td>Frais:</td>
+      <td>${T.charges}</td>
       <td class="align-right">${charges ? `${charges[2]} ${charges[1]}` : '-'}</td>
     </tr>
     <tr>
-      <td>Montant:</td>
+      <td>${T.amount}</td>
       <td class="bold align-right">${amount[2]} ${amount[1]}</td>
     </tr>
 `;
@@ -151,23 +151,23 @@ function getEntrySummary (xml) {
   </caption>
   <tbody>
     <tr>
-      <td>Total:</td>
+      <td>${T.total}</td>
       <td class="bold align-right">${amount[2]} ${amount[1]}</td>
     </tr>`;
   if (charges) {
     html += `
     <tr>
-      <td>Total des frais:</td>
+      <td>${T.totalCharge}</td>
       <td class="bold align-right">${charges[2]} ${charges[1]}</td>
     </tr>`
   };
   html += `
     <tr>
-      <td>Date de comptabilisation:</td>
+      <td>${T.dateBooking}</td>
       <td class="align-right">${bookingDate}</td>
     </tr>
     <tr>
-      <td>Date valeur:</td>
+      <td>${T.dateValuta}</td>
       <td class="align-right">${valutaDate}</td>
     </tr>`;
  html += details;
@@ -190,7 +190,7 @@ function getBalanceSummary (xml, output) {
         output.open = `
 <table cellpadding="0" cellspacing="0" class="balance-open">
   <tr>
-    <td>Solde d'ouverture (${date})</td>
+    <td>${T.openBalance} (${date})</td>
     <td class="bold align-right">${amount[2]} ${amount[1]}</td>
   </tr>
 </table>`;
@@ -199,7 +199,7 @@ function getBalanceSummary (xml, output) {
         output.close = `
 <table cellpadding="0" cellspacing="0" class="balance-close">
 <tr>
-  <td>Solde de clôture (${date})</td>
+  <td>${T.closeBalance} (${date})</td>
   <td class="bold align-right">${amount[2]} ${amount[1]}</td>
 </tr>
 </table>`;
@@ -263,7 +263,7 @@ function getXmlCamtReport (fileName, title, xml) {
   getEntriesSummary (xml, output);
   
   if (output.entries.length) {
-    transactions += `<h2 class="">Transactions</h2>`;
+    transactions += `<h2 class="">${T.transactions}</h2>`;
     output.entries.forEach (entry => transactions += entry + '\n');
   }
   
@@ -274,15 +274,15 @@ function getXmlCamtReport (fileName, title, xml) {
   </caption>
   <tbody>
     <tr>
-      <td>Fichier:</td>
+      <td>${T.fileName}</td>
       <td>${escapeXml (fileName)}</td>
     </tr>
     <tr>
-      <td>Date de création:</td>
+      <td>${T.creationDate}</td>
       <td>${getCreationDateTime (xml)}</td>
     </tr>
     <tr>
-      <td>Compte client:</td>
+      <td>${T.customerAccount}</td>
       <td>${getCustomerAccount (xml)}</td>
     </tr>
   </tbody>
@@ -294,12 +294,43 @@ ${output.close || ''}`;
 
 function getXmlReport (title, xml) {
   if (xml.indexOf (`<Document xmlns="${xsdCamt53V4}" `) > 0) {
-    return getXmlCamtReport (title, 'Fichier camt.053 (V4)', xml);
+    return getXmlCamtReport (title, T.camt53V4, xml);
   }
   if (xml.indexOf (`<Document xmlns="${xsdCamt54V4}" `) > 0) {
-    return getXmlCamtReport (title, 'Fichier camt.054 (V4)', xml);
+    return getXmlCamtReport (title, T.camt54V4, xml);
   }
-  return `<h1 class="error">Ce fichier possède un format non reconnu.</h1>`;
+  return `<h1 class="error">${T.undefinedFormat}</h1>`;
+}
+
+/******************************************************************************/
+
+function scrollTo (element, to, duration) {
+    const start = element.scrollTop;
+    const change = to - start;
+    const increment = 20;
+    let currentTime = 0;
+        
+    //t = current time
+    //b = start value
+    //c = change in value
+    //d = duration
+    function easeInOutQuad (t, b, c, d) {
+      t = t / (d / 2);
+      if (t < 1) {
+        return c / 2 * t * t + b;
+      }
+      t--;
+      return -c / 2 * (t * (t - 2) - 1) + b;
+    }
+    function animateScroll () {        
+        currentTime += increment;
+        const val = easeInOutQuad (currentTime, start, change, duration);
+        element.scrollTop = val;
+        if (currentTime < duration) {
+            setTimeout (animateScroll, increment);
+        }
+    };
+    animateScroll ();
 }
 
 /******************************************************************************/
@@ -324,9 +355,8 @@ function handleFileSelect (evt) {
       };
     reader.readAsText (xml);
     output.insertBefore (article, null);
-    
-    $('html, body').animate ({scrollTop: 650}, 1000);
-  }
+    scrollTo (document.body, 650, 800);
+   }
   
   output.style.display = "block";
 }
