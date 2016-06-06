@@ -17,7 +17,7 @@ body {
   padding: 0px;
   margin: 0px;
   background: #005187;
-  background: url('../images/swiss-mountains2.jpg') no-repeat top center #005187;
+  background: url('/images/lake.jpg') no-repeat top center #005187;
   background-size: 100% auto;
   color: #fff;
 }
@@ -46,10 +46,6 @@ tr {
   float: left;
   margin-right: 2em;
   z-index: 999;
-}
-
-.logo img {
-  width: 150px;
 }
 
 header {
@@ -254,6 +250,7 @@ footer {
 
 .boxes img {
   width: 50%;
+  height: 50%;
 }
 
 footer p {
