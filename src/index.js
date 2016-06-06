@@ -304,33 +304,38 @@ function getXmlReport (title, xml) {
 
 /******************************************************************************/
 
-function scrollTo (element, to, duration) {
-    const start = element.scrollTop;
-    const change = to - start;
-    const increment = 20;
-    let currentTime = 0;
-        
-    //t = current time
-    //b = start value
-    //c = change in value
-    //d = duration
-    function easeInOutQuad (t, b, c, d) {
-      t = t / (d / 2);
-      if (t < 1) {
-        return c / 2 * t * t + b;
-      }
-      t--;
-      return -c / 2 * (t * (t - 2) - 1) + b;
+function scrollTo (to, duration) {
+  const doc       = document.documentElement;
+  const body      = document.body;
+  const start     = doc.scrollTop;
+  const change    = to - start;
+  const increment = 20;
+
+  //t = current time
+  //b = start value
+  //c = change in value
+  //d = duration
+  function easeInOutQuad (t, b, c, d) {
+    t = t / (d / 2);
+    if (t < 1) {
+      return c / 2 * t * t + b;
     }
-    function animateScroll () {        
-        currentTime += increment;
-        const val = easeInOutQuad (currentTime, start, change, duration);
-        element.scrollTop = val;
-        if (currentTime < duration) {
-            setTimeout (animateScroll, increment);
-        }
-    };
-    animateScroll ();
+    t--;
+    return -c / 2 * (t * (t - 2) - 1) + b;
+  }
+
+  let currentTime = 0;
+
+  function animateScroll () {
+    currentTime += increment;
+    const val = easeInOutQuad (currentTime, start, change, duration);
+    doc.scrollTop  = val; // for IE
+    body.scrollTop = val; // for Chrome
+    if (currentTime < duration) {
+      setTimeout (animateScroll, increment);
+    }
+  }
+  animateScroll ();
 }
 
 /******************************************************************************/
@@ -355,9 +360,9 @@ function handleFileSelect (evt) {
       };
     reader.readAsText (xml);
     output.insertBefore (article, null);
-    scrollTo (document.body, 650, 800);
+    scrollTo (650, 800);
    }
-  
+
   output.style.display = "block";
 }
 
