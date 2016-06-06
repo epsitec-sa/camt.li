@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="description" content="Lisez facilement vos fichiers camt ISO-20022 avec cet outil en ligne, créé et offert par Crésus, les logiciels de gestion.">
+    <meta name="keywords" content="Crésus, logiciels de gestion, camt, iso, 20022, ISO-20022, comptabilité, facturation, salaires, swissdec">
     <title>Analyse de fichier camt ISO-20022 | Un outil créé et offert par Crésus, les logiciels de gestion</title>
     <link href='https://fonts.googleapis.com/css?family=Lato:400,700,900' rel='stylesheet' type='text/css' />
     <link rel="stylesheet" href="css/font-awesome.min.css" />
@@ -12,7 +14,7 @@
     <header>
       <div class="row">
         <div class="columns small-12">
-          <a href="http://www.cresus.ch" target="_blank" title="Crésus, les logiciels de gestion" class="logo"><img src="images/cresus-fr.png" /></a>
+          <a href="http://www.cresus.ch" target="_blank" title="Crésus, les logiciels de gestion" class="logo"><img width="150" height="63" alt="Crésus Logo" src="images/cresus-fr.png" /></a>
           <div class="wrap" style="float: right;">
             <div class="language" style="float: right;">
               <a href="index-fr.html" title="français" class="active">FR</a> | 
@@ -60,24 +62,49 @@
         <div class="columns small-12">
           <div class="boxes center">
             <p style="font-size: 1.5em; "><span class="bolder">Crésus</span>, le pionnier suisse du trafic des paiements ISO-20022 pour PME</p>
-            <img src="images/box-fr.png" alt="box-fr" />
+            <img width="1200" height="490" alt="Crésus Salaires, Crésus Comptabilité, Crésus Salaires" src="images/box-fr.png" />
           </div>
           
-          <div class="wrapper" id="output" style="display: none;";>
+          <div class="wrapper" id="output" style="display: none;">
             <!-- CONTENU DU DOC DROPÉ -->
           </div>
           
           <div class="wrap">
-            <a href="http://www.cresus.ch" target="_blank" title="Crésus, les logiciels de gestion" class="logo"><img src="images/cresus-fr.png" /></a>
-            <p class="disclaimer"><strong>
-              Limitation de responsabilité:</strong> Cette page est fournie à titre gracieux par Epsitec SA. Epsitec SA ne garantit pas l'exactitude des données présentées et ne saurait être tenue pour responsable de quoi que ce soit découlant de l’utilisation de cette page. De plus, Epsitec SA n'a pas l'intention et ne s'engage d'aucune manière à actualiser ou à adapter cette page aux évolutions.</p>
+            <a href="http://www.cresus.ch" target="_blank" title="Crésus, les logiciels de gestion" class="logo"><img width="150" height="63" alt="Crésus Logo" src="images/cresus-fr.png" /></a>
+            <p class="disclaimer">
+              Cette page est fournie à titre gracieux par Epsitec SA. Epsitec SA ne garantit pas l'exactitude des données présentées
+              et ne saurait être tenue pour responsable de quoi que ce soit découlant de l’utilisation de cette page. De plus, Epsitec
+              SA n'a pas l'intention et ne s'engage d'aucune manière à actualiser ou à adapter cette page aux évolutions.
+            </p>
             <div class="clearfix"></div>
           </div>
         </div>
       </div>
     </footer>
     
-    <script src="text-fr.js"></script>
+    <script>
+var T = {
+  undefinedFormat: 'Ce fichier possède un format non reconnu.',
+  camt53V4: 'Fichier camt.053 (V4)',
+  camt54V4: 'Fichier camt.054 (V4)',
+  fileName: 'Fichier',
+  creationDate: 'Date de création',
+  customerAccount: 'Compte client',
+  transactions: 'Transactions',
+  openBalance: 'Solde d\'ouverture',
+  closeBalance: 'Solde de clôture',
+  dateValuta: 'Date valeur',
+  dateBooking: 'Date de comptabilisation',
+  totalCharge: 'Total des frais',
+  total: 'Total',
+  movement: 'Mouvement',
+  debtor: 'Débiteur',
+  finInstitute: 'Institut financier',
+  reference: 'Référence',
+  charges: 'Frais',
+  amount: 'Montant'
+};
+    </script>
     <script src="index.js"></script>
   </body>
 </html>

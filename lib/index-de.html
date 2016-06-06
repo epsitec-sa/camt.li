@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="description" content="Mit diesem Tool lesen Sie ganz einfach Ihre ISO-20022 camt-Dateien. Der Service wurde von Crésus entwickelt: Crésus, Unternehmenssoftware.">
+    <meta name="keywords" content="Crésus, Unternehmenssoftware, camt, iso, 20022, ISO-20022, Fibu, Finanzbuchhaltung, Buchhaltung, Faktura, Lohn, swissdec">
     <title>ISO-20022 camt Dateien analysieren | Ein Service von Crésus, Unternehmenssoftware</title>
     <link href='https://fonts.googleapis.com/css?family=Lato:400,700,900' rel='stylesheet' type='text/css' />
     <link rel="stylesheet" href="css/font-awesome.min.css" />
@@ -12,7 +14,7 @@
     <header>
       <div class="row">
         <div class="columns small-12">
-          <a href="http://www.cresus.ch" target="_blank" title="Crésus, Unternehmenssoftware" class="logo"><img src="images/cresus-de.png" /></a>
+          <a href="http://www.cresus.ch" target="_blank" title="Crésus, Unternehmenssoftware" class="logo"><img width="150" height="63" alt="Crésus Logo" src="images/cresus-de.png" /></a>
           <div class="wrap" style="float: right;">
             <div class="language" style="float: right;">
               <a href="index-fr.html" title="français" class="">FR</a> | 
@@ -60,24 +62,49 @@
         <div class="columns small-12">
           <div class="boxes center">
             <p style="font-size: 1.5em; "><span class="bolder">Crésus</span>, der Schweizer Pionier des ISO-20022 Zahlungsverkehrs für KMU</p>
-            <img src="images/box-fr.png" alt="box-fr" />
+            <img width="1200" height="490" alt="Crésus Lohn, Crésus Finanzbuchhaltung, Crésus Faktura" src="images/box-de.png" />
           </div>
           
-          <div class="wrapper" id="output" style="display: none;";>
+          <div class="wrapper" id="output" style="display: none;">
             <!-- CONTENU DU DOC DROPÉ -->
           </div>
           
           <div class="wrap">
-            <a href="http://www.cresus.ch" target="_blank" title="Crésus, Unternehmenssoftware" class="logo"><img src="images/cresus-de.png" /></a>
-            <p class="disclaimer"><strong>
-              Limitation de responsabilité:</strong> Cette page est fournie à titre gracieux par Epsitec SA. Epsitec SA ne garantit pas l'exactitude des données présentées et ne saurait être tenue pour responsable de quoi que ce soit découlant de l’utilisation de cette page. De plus, Epsitec SA n'a pas l'intention et ne s'engage d'aucune manière à actualiser ou à adapter cette page aux évolutions.</p>
+            <a href="http://www.cresus.ch" target="_blank" title="Crésus, Unternehmenssoftware" class="logo"><img width="150" height="63" alt="Crésus Logo" src="images/cresus-de.png" /></a>
+            <p class="disclaimer">
+              Diese Seite ist unentgeltlich von Epsitec AG zu Verfügung gestellt. Epsitec AG übernimmt keine Garantie für die Richtigkeit
+              der Daten und übernimmt keine Verantwortung für die Benutzung dieser Seite. Des Weiteren beabsichtigt Epsitec AG nicht und
+              übernimmt keinerlei Verpflichtung, die Seite zu aktualisieren und an zukünftige Entwicklungen anzupassen.
+            </p>
             <div class="clearfix"></div>
           </div>
         </div>
       </div>
     </footer>
     
-    <script src="text-de.js"></script>
+    <script>
+var T = {
+  undefinedFormat: 'Diese Datei wurde nicht erkannt.',
+  camt53V4: 'camt.053 (V4) Datei',
+  camt54V4: 'camt.054 (V4) Datei',
+  fileName: 'Datei',
+  creationDate: 'Erstellt am',
+  customerAccount: 'Kundenkonto',
+  transactions: 'Transaktionen',
+  openBalance: 'Eröffnungssaldo',
+  closeBalance: 'Abschlusssaldo',
+  dateValuta: 'Valuta',
+  dateBooking: 'Bunchungsdatum',
+  totalCharge: 'Gesamtkosten',
+  total: 'Gesamtbetrag',
+  movement: 'Bewegung',
+  debtor: 'Debitor',
+  finInstitute: 'Finanzinstitut',
+  reference: 'Referenz',
+  charges: 'Kosten',
+  amount: 'Betrag'
+};
+    </script>
     <script src="index.js"></script>
   </body>
 </html>
