@@ -27,6 +27,8 @@ function splitLongLine (text, length) {
 
 /******************************************************************************/
 
+const xsdCamt53V2 = 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.02';
+const xsdCamt54V2 = 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.02';
 const xsdCamt53V4 = 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.04';
 const xsdCamt54V4 = 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.04';
 
@@ -293,8 +295,14 @@ ${output.close || ''}`;
 }
 
 function getXmlReport (title, xml) {
+  if (xml.indexOf (`<Document xmlns="${xsdCamt53V2}" `) > 0) {
+    return getXmlCamtReport (title, T.camt53V2, xml);
+  }
   if (xml.indexOf (`<Document xmlns="${xsdCamt53V4}" `) > 0) {
     return getXmlCamtReport (title, T.camt53V4, xml);
+  }
+  if (xml.indexOf (`<Document xmlns="${xsdCamt54V2}" `) > 0) {
+    return getXmlCamtReport (title, T.camt54V2, xml);
   }
   if (xml.indexOf (`<Document xmlns="${xsdCamt54V4}" `) > 0) {
     return getXmlCamtReport (title, T.camt54V4, xml);
