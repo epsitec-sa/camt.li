@@ -40,7 +40,7 @@ function formatTime (time) {
 }
 
 function getDateTime (xml, pattern) {
-  pattern = `${pattern}(....-..-..)T(..:..:..)<`;
+  pattern = `${pattern}(....-..-..)T(..:..:..)`;
   const result = xml.match (pattern);
   const date = formatDate (result[1]);
   const time = formatTime (result[2]);
@@ -48,7 +48,7 @@ function getDateTime (xml, pattern) {
 }
 
 function getDate (xml, pattern) {
-  pattern = `${pattern}(....-..-..)<`;
+  pattern = `${pattern}(....-..-..)`;
   const result = xml.match (pattern);
   return formatDate (result[1]);
 }
@@ -70,20 +70,20 @@ function formatIBAN (iban) {
 }
 
 function getDetailsSummary (xml) {
-  const amount = xml.match (/<Amt Ccy="(...)">(\d+\.\d+)</);
-  const charges = xml.match (/<TtlChrgsAndTaxAmt Ccy="(...)">(\d+\.\d+)</);
-  const credit = xml.match (/<CdtDbtInd>([A-Z]+)</);
-  const financialInstitution = xml.match (/<FinInstnId>(.+)<\/FinInstnId>/);
-  const debtorName = xml.match (/<RltdPties><Dbtr><Nm>([^<]*)<\/Nm>/);
-  const remittanceInformation = xml.match (/<RmtInf>(.+)<\/RmtInf>/);
-  const debtorFinName = financialInstitution && financialInstitution[1].match (/<Nm>([a-zA-Z0-9_\-.:;+/ ]*)</);
-  const reference = remittanceInformation && remittanceInformation[1].match (/<Ref>(.*)<\/Ref>/);
+  const amount = xml.match (/<Amt Ccy="(...)">\s*([\-0-9\.]+)\s*</);
+  const charges = xml.match (/<TtlChrgsAndTaxAmt Ccy="(...)">\s*([\-0-9\.]+)\s*</);
+  const credit = xml.match (/<CdtDbtInd>\s*([A-Z]+)\s*</);
+  const financialInstitution = xml.match (/<FinInstnId>\s*(.+)\s*<\/FinInstnId>/);
+  const debtorName = xml.match (/<RltdPties>\s*<Dbtr>\s*<Nm>\s*([^<]*)\s*<\/Nm>/);
+  const remittanceInformation = xml.match (/<RmtInf>\s*(.+)\s*<\/RmtInf>/);
+  const debtorFinName = financialInstitution && financialInstitution[1].match (/<Nm>\s*([a-zA-Z0-9_\-.:;+/ ]*)\s*</);
+  const reference = remittanceInformation && remittanceInformation[1].match (/<Ref>\s*(.*)\s*<\/Ref>/);
   
   if ((!debtorName) && (!reference) && (!debtorFinName)) {
     return '';
   }
 
-  const debtorAccount = xml.match (/<DbtrAcct><Id><IBAN>([A-Z0-9]+)</);
+  const debtorAccount = xml.match (/<DbtrAcct>\s*<Id>\s*<IBAN>\s*([A-Z0-9]+)\s*</);
   const debtorBank1 = debtorName ? escapeXml (debtorName[1]) : '';
   const debtorBank2 = debtorAccount ? debtorAccount[1] : '';
   const debtorDetails = debtorBank1.length ? (debtorBank1 + (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : ''))
@@ -122,12 +122,12 @@ function getDetailsSummary (xml) {
 }
 
 function getEntrySummary (xml) {
-  const amount  = xml.match (/<Amt Ccy="(...)">(\d+\.\d+)<\/Amt/);
-  const charges = xml.match (/<TtlChrgsAndTaxAmt Ccy="(...)">(\d+\.\d+)<\/TtlChrgsAndTaxAmt/);
-  const infos   = xml.match (/<AddtlNtryInf>(.+)<\/AddtlNtryInf/);
+  const amount  = xml.match (/<Amt Ccy="(...)">\s*([\-0-9\.]+)\s*<\/Amt/);
+  const charges = xml.match (/<TtlChrgsAndTaxAmt Ccy="(...)">\s*([\-0-9\.]+)\s*<\/TtlChrgsAndTaxAmt/);
+  const infos   = xml.match (/<AddtlNtryInf>\s*(.+)\s*<\/AddtlNtryInf/);
   
-  const bookingDate = getDate (xml, '<BookgDt><Dt>');
-  const valutaDate  = getDate (xml, '<ValDt><Dt>');
+  const bookingDate = getDate (xml, '<BookgDt>\\s*<Dt>\\s*');
+  const valutaDate  = getDate (xml, '<ValDt>\\s*<Dt>\\s*');
   
   let details = '';
   let start = 0;
@@ -183,9 +183,9 @@ function getEntrySummary (xml) {
 /******************************************************************************/
 
 function getBalanceSummary (xml, output) {
-  const cd = xml.match (/<Cd>(\w+)<\/Cd>/);
-  const amount = xml.match (/<Amt Ccy="(...)">(\d+\.\d+)<\/Amt/);
-  const date = getDate (xml, '<Dt>');
+  const cd = xml.match (/<Cd>\s*(\w+)\s*<\/Cd>/);
+  const amount = xml.match (/<Amt Ccy="(...)">\s*([\-0-9\.]+)\s*<\/Amt/);
+  const date = getDate (xml, '<Dt>\\s*');
   if (cd) {
     switch (cd[1]) {
       case 'OPBD':
@@ -252,7 +252,7 @@ function getEntriesSummary (xml, output) {
 }
 
 function getCustomerAccount (xml) {
-  const result = xml.match (/<Acct><Id><IBAN>(CH\d+)/);
+  const result = xml.match (/<Acct>\s*<Id>\s*<IBAN>\s*(CH\d+)/);
   return result && `IBAN ${formatIBAN (result[1])}` || `-`;
 }
 
