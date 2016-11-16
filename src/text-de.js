@@ -6,6 +6,7 @@ var T = {
   creationDate: 'Erstellt am',
   customerAccount: 'Kundenkonto',
   transactions: 'Transaktionen',
+  transactionsNo: 'Anzahl der Transaktionen',
   openBalance: 'Eröffnungssaldo',
   closeBalance: 'Abschlusssaldo',
   dateValuta: 'Valuta',

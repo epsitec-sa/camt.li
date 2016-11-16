@@ -6,6 +6,7 @@ var T = {
   creationDate: 'Date de création',
   customerAccount: 'Compte client',
   transactions: 'Transactions',
+  transactionsNo: 'Nombre de transactions',
   openBalance: 'Solde d\'ouverture',
   closeBalance: 'Solde de clôture',
   dateValuta: 'Date valeur',
