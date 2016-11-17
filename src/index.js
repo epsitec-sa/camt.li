@@ -249,13 +249,10 @@ function getBalanceSummary (balance, output) {
 function getEntriesSummaryNtry (bLevel, output) {
   output.entries = [];
 
-  if (bLevel.Ntry) {
-    for (var entry of bLevel.Ntry) {
-      console.dir(entry);
-      const html  = getEntrySummary (entry);
-      if (html) {
-        output.entries.push (html);
-      }
+  for (var entry of (bLevel.Ntry || [])) {
+    const html  = getEntrySummary (entry);
+    if (html) {
+      output.entries.push (html);
     }
   }
 }
