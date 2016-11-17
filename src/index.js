@@ -106,12 +106,12 @@ function formatIBAN (iban) {
   }
 }
 
-function getDetailsSummary (details) {
+function getDetailsSummary (details, bvrsInfo) {
   const amount = _(() => details.Amt[0]._);
   const currency = _(() => details.Amt[0].$.Ccy);
   const chargesAmount = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
   const chargesCurrency = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
-  const credit = _(() => details.CdtDbInd[0]);
+  const credit = _(() => details.CdtDbtInd[0]);
   const debtorName = _(() => details.RltdPties[0].Dbtr[0].Nm[0]);
   const debtorFinName = _(() => details.RltdAgts[0].DbtrAgt[0].FinInstnId[0].Nm[0]);
   const reference = _(() => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]);
@@ -125,6 +125,13 @@ function getDetailsSummary (details) {
   const debtorBank2 = debtorAccount || '';
   const debtorDetails = debtorBank1.length ? (debtorBank1 + (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : ''))
                                            : (debtorBank2.length ? formatIBAN (debtorBank2) : '-');
+
+
+  if (credit === 'CRDT' && reference) {
+    bvrsInfo.count = bvrsInfo.count + 1; // It is an ESR transaction
+  }
+
+
 
   return `
   </tbody>
@@ -158,7 +165,7 @@ function getDetailsSummary (details) {
 `;
 }
 
-function getEntrySummary (entry) {
+function getEntrySummary (entry, bvrsInfo) {
   const amount = _(() => entry.Amt[0]._);
   const currency = _(() => entry.Amt[0].$.Ccy);
   const chargesAmount = _(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
@@ -172,7 +179,7 @@ function getEntrySummary (entry) {
 
   for (var entryDetails of (entry.NtryDtls || [])) {
     for (var txDetails of (entryDetails.TxDtls || [])) {
-      details += getDetailsSummary (txDetails);
+      details += getDetailsSummary (txDetails, bvrsInfo);
     }
   }
 
@@ -189,6 +196,7 @@ function getEntrySummary (entry) {
       <td>${T.total}</td>
       <td class="bold align-right">${amount || '-'} ${currency || ''}</td>
     </tr>`;
+
   if (chargesAmount && chargesCurrency) {
     html += `
     <tr>
@@ -248,9 +256,10 @@ function getBalanceSummary (balance, output) {
 
 function getEntriesSummaryNtry (bLevel, output) {
   output.entries = [];
+  output.bvrsInfo = { count: 0 };
 
   for (var entry of (bLevel.Ntry || [])) {
-    const html  = getEntrySummary (entry);
+    const html  = getEntrySummary (entry, output.bvrsInfo);
     if (html) {
       output.entries.push (html);
     }
@@ -308,6 +317,10 @@ function getXmlCamtReport (fileName, title, aLevel) {
           <tr>
             <td>${T.transactionsNo}</td>
             <td>${getTransactionsNo (bLevel)}</td>
+          </tr>
+          <tr>
+            <td>${T.incomesNo}</td>
+            <td>${output.bvrsInfo.count}</td>
           </tr>
         </tbody>
       </table>
