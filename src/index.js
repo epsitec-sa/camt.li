@@ -80,6 +80,19 @@ function getCreationDateTime (header) {
   return getDateTime (_(() => header.CreDtTm[0])) || '-';
 }
 
+function getTransactionsNo (bLevel) {
+  let transactions = 0;
+
+  for (var entry of (bLevel.Ntry || [])) {
+    for (var entryDetails of (entry.NtryDtls || [])) {
+      transactions += parseInt (_(() => entryDetails.Btch[0].NbOfTxs[0]) || _(() => entryDetails.TxDtls.length) || 0);
+    }
+  }
+
+  return transactions;
+}
+
+
 function formatIBAN (iban) {
   if (iban) {
     let out = '';
@@ -294,6 +307,10 @@ function getXmlCamtReport (fileName, title, aLevel) {
           <tr>
             <td>${T.customerAccount}</td>
             <td>${getCustomerAccount (bLevel)}</td>
+          </tr>
+          <tr>
+            <td>${T.transactionsNo}</td>
+            <td>${getTransactionsNo (bLevel)}</td>
           </tr>
         </tbody>
       </table>
