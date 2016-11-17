@@ -1,45 +1,14 @@
 'use strict';
 
 var parseString = require('xml2js').parseString;
-/******************************************************************************/
+var escapeXml = require ('./utils.js').escapeXml;
+var splitLongLine = require ('./utils.js').splitLongLine;
+var _ = require ('./utils.js')._;
+var getDateTime = require ('./utils.js').getDateTime;
+var getDate = require ('./utils.js').getDate;
+var generateV11 = require ('./v11.js').generateV11;
 
-function escapeXml (unsafe) {
-  if (unsafe) {
-    return unsafe.replace (/[<>&'"]/g, function (c) {
-        switch (c) {
-        case '<': return '&lt;';
-        case '>': return '&gt;';
-        case '&': return '&amp;';
-        case '\'': return '&apos;';
-        case '"': return '&quot;';
-      }
-      });
-  }
-}
 
-function splitLongLine (text, length) {
-  if (text && length) {
-    let output = '';
-    while (text.length > length) {
-      output += text.substring (0, length);
-      output += '<br/>';
-      text = text.substring (40);
-    }
-    output += text;
-    return output;
-  }
-}
-
-function _(getElementAction) {
-  try {
-    return getElementAction ();
-  }
-  catch(err) {
-    return null;
-  }
-}
-
-/******************************************************************************/
 const camtXsds = {
   '53V2': 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.02',
   '54V2': 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.02',
@@ -48,32 +17,7 @@ const camtXsds = {
 };
 
 
-function formatDate (date) {
-  if (date) {
-    return `${date.substring (8, 10)}/${date.substring (5, 7)}/${date.substring (0, 4)}`;
-  }
-}
-function formatTime (time) {
-  return time;
-}
 
-function getDateTime (xml) {
-  if (xml) {
-    var pattern = `(....-..-..)T(..:..:..)`;
-    const result = xml.match (pattern);
-    const date = formatDate (result[1]);
-    const time = formatTime (result[2]);
-    return `${date}, ${time}`;
-  }
-}
-
-function getDate (xml) {
-  if (xml) {
-    var pattern = `(....-..-..)`;
-    const result = xml.match (pattern);
-    return formatDate (result[1]);
-  }
-}
 
 function getCreationDateTime (header) {
   // <CreDtTm>2016-05-06T23:01:15</CreDtTm>
@@ -430,7 +374,7 @@ function handleFileSelect (evt) {
     reader.onload = e => {
         getXmlReport (xml.name, e.target.result, (err, html) => {
           if (err) {
-            console.dir (err);
+            console.log (err);
           }
           article.innerHTML = html;
         });
