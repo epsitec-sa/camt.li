@@ -145,16 +145,18 @@ function getDetailsSummary (xml) {
 `;
 }
 
-function getEntrySummary (xml) {
-  const amount  = xml.match (/<Amt Ccy="(...)">\s*([\-0-9\.]+)\s*<\/Amt/);
-  const charges = xml.match (/<TtlChrgsAndTaxAmt Ccy="(...)">\s*([\-0-9\.]+)\s*<\/TtlChrgsAndTaxAmt/);
-  const infos   = xml.match (/<AddtlNtryInf>\s*(.+)\s*<\/AddtlNtryInf/);
+function getEntrySummary (entry) {
+  const amount = _(() => entry.Amt[0]._);
+  const currency = _(() => entry.Amt[0].$.Ccy);
+  const chargesAmount = -(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
+  const chargesCurrency = -(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
+  const infos   = _(() => entry.AddtlNtryInf[0]);
 
-  const bookingDate = getDate (xml, '<BookgDt>\\s*<Dt>\\s*');
-  const valutaDate  = getDate (xml, '<ValDt>\\s*<Dt>\\s*');
+  const bookingDate = getDate (_(() => entry.BookgDt[0].Dt[0]));
+  const valutaDate = getDate (_(() => entry.ValDt[0].Dt[0]));
 
   let details = '';
-  let start = 0;
+/*  let start = 0;
   while (true) {
     start = xml.indexOf ('<TxDtls>', start);
     if (start < 0) {
@@ -166,9 +168,9 @@ function getEntrySummary (xml) {
       break;
     }
     details += getDetailsSummary (xml.substring (start, end));
-  }
+  }*/
 
-  const title = splitLongLine (infos ? infos[1] : '-', 40);
+  const title = splitLongLine (infos || '-', 40);
 
   let html = `
 <table cellpadding="0" cellspacing="0" class="transaction">
@@ -178,23 +180,23 @@ function getEntrySummary (xml) {
   <tbody>
     <tr>
       <td>${T.total}</td>
-      <td class="bold align-right">${amount[2]} ${amount[1]}</td>
+      <td class="bold align-right">${amount || '-'} ${currency || ''}</td>
     </tr>`;
-  if (charges) {
+  if (chargesAmount && chargesCurrency) {
     html += `
     <tr>
       <td>${T.totalCharge}</td>
-      <td class="bold align-right">${charges[2]} ${charges[1]}</td>
+      <td class="bold align-right">${chargesAmount || '-'} ${chargesCurrency || ''}</td>
     </tr>`
   };
   html += `
     <tr>
       <td>${T.dateBooking}</td>
-      <td class="align-right">${bookingDate}</td>
+      <td class="align-right">${bookingDate || '-'}</td>
     </tr>
     <tr>
       <td>${T.dateValuta}</td>
-      <td class="align-right">${valutaDate}</td>
+      <td class="align-right">${valutaDate || '-'}</td>
     </tr>`;
  html += details;
  html += `
@@ -237,25 +239,16 @@ function getBalanceSummary (balance, output) {
   }
 }
 
-function getEntriesSummaryNtry (xml, output) {
-  let start = 0;
-
+function getEntriesSummaryNtry (bLevel, output) {
   output.entries = [];
 
-  while (true) {
-    start = xml.indexOf ('<Ntry>', start);
-    if (start < 0) {
-      break;
-    }
-    start += 6;
-    let end = xml.indexOf ('</Ntry>', start);
-    if (end < 0) {
-      break;
-    }
-    const entry = xml.substring (start, end);
-    const html  = getEntrySummary (entry);
-    if (html) {
-      output.entries.push (html);
+  if (bLevel.Ntry) {
+    for (var entry of bLevel.Ntry) {
+      console.dir(entry);
+      const html  = getEntrySummary (entry);
+      if (html) {
+        output.entries.push (html);
+      }
     }
   }
 }
@@ -266,7 +259,7 @@ function getEntriesSummaryBal (bLevel, output) {
 }
 
 function getEntriesSummary (bLevel, output) {
-  //getEntriesSummaryNtry (bLevel, output);
+  getEntriesSummaryNtry (bLevel, output);
   getEntriesSummaryBal (bLevel, output);
 }
 
@@ -285,10 +278,10 @@ function getXmlCamtReport (fileName, title, aLevel) {
   if (bLevel) {
     getEntriesSummary (bLevel, output);
 
-    /*if (output.entries.length) {
+    if (output.entries.length) {
       transactions += `<h2 class="">${T.transactions}</h2>`;
       output.entries.forEach (entry => transactions += entry + '\n');
-    }*/
+    }
 
     return `
       <table cellpadding="0" cellspacing="0">
@@ -319,8 +312,6 @@ function getXmlCamtReport (fileName, title, aLevel) {
 
 function getXmlReport (title, xml, callback) {
   parseString(xml, function (err, result) {
-    console.dir(result);
-
     if (err) {
       callback (err);
     }
