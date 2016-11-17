@@ -4,26 +4,39 @@ var parseString = require('xml2js').parseString;
 /******************************************************************************/
 
 function escapeXml (unsafe) {
-  return unsafe.replace (/[<>&'"]/g, function (c) {
-      switch (c) {
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '&': return '&amp;';
-      case '\'': return '&apos;';
-      case '"': return '&quot;';
-    }
-    });
+  if (unsafe) {
+    return unsafe.replace (/[<>&'"]/g, function (c) {
+        switch (c) {
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '&': return '&amp;';
+        case '\'': return '&apos;';
+        case '"': return '&quot;';
+      }
+      });
+  }
 }
 
 function splitLongLine (text, length) {
-  let output = '';
-  while (text.length > length) {
-    output += text.substring (0, length);
-    output += '<br/>';
-    text = text.substring (40);
+  if (text && length) {
+    let output = '';
+    while (text.length > length) {
+      output += text.substring (0, length);
+      output += '<br/>';
+      text = text.substring (40);
+    }
+    output += text;
+    return output;
   }
-  output += text;
-  return output;
+}
+
+function _(getElementAction) {
+  try {
+    return getElementAction ();
+  }
+  catch(err) {
+    return null;
+  }
 }
 
 /******************************************************************************/
@@ -36,40 +49,48 @@ const camtXsds = {
 
 
 function formatDate (date) {
-  return `${date.substring (8, 10)}/${date.substring (5, 7)}/${date.substring (0, 4)}`;
+  if (date) {
+    return `${date.substring (8, 10)}/${date.substring (5, 7)}/${date.substring (0, 4)}`;
+  }
 }
 function formatTime (time) {
   return time;
 }
 
 function getDateTime (xml) {
-  var pattern = `(....-..-..)T(..:..:..)`;
-  const result = xml.match (pattern);
-  const date = formatDate (result[1]);
-  const time = formatTime (result[2]);
-  return `${date}, ${time}`;
+  if (xml) {
+    var pattern = `(....-..-..)T(..:..:..)`;
+    const result = xml.match (pattern);
+    const date = formatDate (result[1]);
+    const time = formatTime (result[2]);
+    return `${date}, ${time}`;
+  }
 }
 
 function getDate (xml) {
-  var pattern = `(....-..-..)`;
-  const result = xml.match (pattern);
-  return formatDate (result[1]);
+  if (xml) {
+    var pattern = `(....-..-..)`;
+    const result = xml.match (pattern);
+    return formatDate (result[1]);
+  }
 }
 
 function getCreationDateTime (header) {
   // <CreDtTm>2016-05-06T23:01:15</CreDtTm>
-  return getDateTime (header.CreDtTm[0]);
+  return getDateTime (_(() => header.CreDtTm[0])) || '-';
 }
 
 function formatIBAN (iban) {
-  let out = '';
-  for (let i = 0; i < iban.length; i++) {
-    if ((i > 0) && ((i % 4) === 0)) {
-      out += ' ';
+  if (iban) {
+    let out = '';
+    for (let i = 0; i < iban.length; i++) {
+      if ((i > 0) && ((i % 4) === 0)) {
+        out += ' ';
+      }
+      out += iban[i];
     }
-    out += iban[i];
+    return out;
   }
-  return out;
 }
 
 function getDetailsSummary (xml) {
@@ -267,36 +288,39 @@ function getXmlCamtReport (fileName, title, aLevel) {
   let transactions = '';
   let bLevel = (aLevel.Ntfctn || aLevel.Stmt)[0];
 
-  getEntriesSummary (bLevel, output);
+  if (bLevel) {
+    getEntriesSummary (bLevel, output);
 
-  /*if (output.entries.length) {
-    transactions += `<h2 class="">${T.transactions}</h2>`;
-    output.entries.forEach (entry => transactions += entry + '\n');
-  }*/
+    /*if (output.entries.length) {
+      transactions += `<h2 class="">${T.transactions}</h2>`;
+      output.entries.forEach (entry => transactions += entry + '\n');
+    }*/
 
-  return `
-<table cellpadding="0" cellspacing="0">
-  <caption>
-    <h1>${title}</h1>
-  </caption>
-  <tbody>
-    <tr>
-      <td>${T.fileName}</td>
-      <td>${escapeXml (fileName)}</td>
-    </tr>
-    <tr>
-      <td>${T.creationDate}</td>
-      <td>${getCreationDateTime (aLevel.GrpHdr[0])}</td>
-    </tr>
-    <tr>
-      <td>${T.customerAccount}</td>
-      <td>${getCustomerAccount (bLevel)}</td>
-    </tr>
-  </tbody>
-</table>
-${output.open || ''}
-${transactions}
-${output.close || ''}`;
+    return `
+      <table cellpadding="0" cellspacing="0">
+        <caption>
+          <h1>${title}</h1>
+        </caption>
+        <tbody>
+          <tr>
+            <td>${T.fileName}</td>
+            <td>${escapeXml (fileName)}</td>
+          </tr>
+          <tr>
+            <td>${T.creationDate}</td>
+            <td>${getCreationDateTime (aLevel.GrpHdr[0])}</td>
+          </tr>
+          <tr>
+            <td>${T.customerAccount}</td>
+            <td>${getCustomerAccount (bLevel)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    ${output.open || ''}
+    ${transactions}
+    ${output.close || ''}`;
+  }
 }
 
 function getXmlReport (title, xml, callback) {
