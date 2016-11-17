@@ -8,6 +8,8 @@ var T = {
   transactions: 'Transactions',
   transactionsNo: 'Nombre de transactions',
   incomesNo: 'Nombre d\'encaissements BVR',
+  origAmount: 'Montant d\'origine',
+  exchangeRate: 'Taux d\'échange',
   openBalance: 'Solde d\'ouverture',
   closeBalance: 'Solde de clôture',
   dateValuta: 'Date valeur',

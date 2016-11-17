@@ -8,6 +8,8 @@ var T = {
   transactions: 'Transaktionen',
   transactionsNo: 'Anzahl der Transaktionen',
   incomesNo: 'Anzahl des ESR',
+  origAmount: 'Ursprünglich Betrag',
+  exchangeRate: 'Tauschrate',
   openBalance: 'Eröffnungssaldo',
   closeBalance: 'Abschlusssaldo',
   dateValuta: 'Valuta',
