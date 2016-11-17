@@ -206,30 +206,33 @@ function getEntrySummary (xml) {
 
 /******************************************************************************/
 
-function getBalanceSummary (xml, output) {
-  const cd = xml.match (/<Cd>\s*(\w+)\s*<\/Cd>/);
-  const amount = xml.match (/<Amt Ccy="(...)">\s*([\-0-9\.]+)\s*<\/Amt/);
-  const date = getDate (xml, '<Dt>\\s*');
-  if (cd) {
-    switch (cd[1]) {
-      case 'OPBD':
-        output.open = `
-<table cellpadding="0" cellspacing="0" class="balance-open">
+function getBalanceSummary (balance, output) {
+  if (balance) {
+    const cd = _(() => balance.Tp[0].CdOrPrtry[0].Cd[0]);
+    const amount = _(() => balance.Amt[0]._);
+    const currency = _(() => balance.Amt[0].$.Ccy);
+    const date = getDate (_(() => balance.Dt[0].Dt[0]));
+    if (cd) {
+      switch (cd) {
+        case 'OPBD':
+          output.open = `
+  <table cellpadding="0" cellspacing="0" class="balance-open">
+    <tr>
+      <td>${T.openBalance} (${date || '-'})</td>
+      <td class="bold align-right">${amount || '-'} ${currency || ''}</td>
+    </tr>
+  </table>`;
+          break;
+        case 'CLBD':
+          output.close = `
+  <table cellpadding="0" cellspacing="0" class="balance-close">
   <tr>
-    <td>${T.openBalance} (${date})</td>
-    <td class="bold align-right">${amount[2]} ${amount[1]}</td>
+    <td>${T.closeBalance} (${date || '-'})</td>
+    <td class="bold align-right">${amount || '-'} ${currency || ''}</td>
   </tr>
-</table>`;
-        break;
-      case 'CLBD':
-        output.close = `
-<table cellpadding="0" cellspacing="0" class="balance-close">
-<tr>
-  <td>${T.closeBalance} (${date})</td>
-  <td class="bold align-right">${amount[2]} ${amount[1]}</td>
-</tr>
-</table>`;
-        break;
+  </table>`;
+          break;
+      }
     }
   }
 }
@@ -257,28 +260,19 @@ function getEntriesSummaryNtry (xml, output) {
   }
 }
 
-function getEntriesSummaryBal (xml, output) {
-  let start = 0;
-  while (true) {
-    start = xml.indexOf ('<Bal>', start);
-    if (start < 0) {
-      break;
-    }
-    start += 5;
-    let end = xml.indexOf ('</Bal>', start);
-    getBalanceSummary (xml.substring (start, end), output);
-  }
+function getEntriesSummaryBal (bLevel, output) {
+  getBalanceSummary (_(() => bLevel.Bal[0]), output);
+  getBalanceSummary (_(() => bLevel.Bal[1]), output);
 }
 
-function getEntriesSummary (xml, output) {
-  //getEntriesSummaryNtry (xml, output);
-  //getEntriesSummaryBal (xml, output);
+function getEntriesSummary (bLevel, output) {
+  //getEntriesSummaryNtry (bLevel, output);
+  getEntriesSummaryBal (bLevel, output);
 }
 
-function getCustomerAccount (xml) {
-  /*const result = xml.match (/<Acct>\s*<Id>\s*<IBAN>\s*(CH\d+)/);
-  return result && `IBAN ${formatIBAN (result[1])}` || `-`;*/
-  return null;
+function getCustomerAccount (bLevel) {
+  const iban = formatIBAN (_(() => bLevel.Acct[0].Id[0].IBAN[0]));
+  return iban ? `IBAN ${iban}` : '-';
 }
 
 /******************************************************************************/
