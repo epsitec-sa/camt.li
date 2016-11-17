@@ -7,6 +7,7 @@ var T = {
   customerAccount: 'Compte client',
   transactions: 'Transactions',
   transactionsNo: 'Nombre de transactions',
+  incomesNo: 'Nombre d\'encaissements BVR',
   openBalance: 'Solde d\'ouverture',
   closeBalance: 'Solde de clôture',
   dateValuta: 'Date valeur',
