@@ -93,23 +93,23 @@ function formatIBAN (iban) {
   }
 }
 
-function getDetailsSummary (xml) {
-  const amount = xml.match (/<Amt Ccy="(...)">\s*([\-0-9\.]+)\s*</);
-  const charges = xml.match (/<TtlChrgsAndTaxAmt Ccy="(...)">\s*([\-0-9\.]+)\s*</);
-  const credit = xml.match (/<CdtDbtInd>\s*([A-Z]+)\s*</);
-  const financialInstitution = xml.match (/<FinInstnId>\s*(.+)\s*<\/FinInstnId>/);
-  const debtorName = xml.match (/<RltdPties>\s*<Dbtr>\s*<Nm>\s*([^<]*)\s*<\/Nm>/);
-  const remittanceInformation = xml.match (/<RmtInf>\s*(.+)\s*<\/RmtInf>/);
-  const debtorFinName = financialInstitution && financialInstitution[1].match (/<Nm>\s*([a-zA-Z0-9_\-.:;+/ ]*)\s*</);
-  const reference = remittanceInformation && remittanceInformation[1].match (/<Ref>\s*(.*)\s*<\/Ref>/);
+function getDetailsSummary (details) {
+  const amount = _(() => details.Amt[0]._);
+  const currency = _(() => details.Amt[0].$.Ccy);
+  const chargesAmount = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
+  const chargesCurrency = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
+  const credit = _(() => details.CdtDbInd[0]);
+  const debtorName = _(() => details.RltdPties[0].Dbtr[0].Nm[0]);
+  const debtorFinName = _(() => details.RltdAgts[0].DbtrAgt[0].FinInstnId[0].Nm[0]);
+  const reference = _(() => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]);
 
   if ((!debtorName) && (!reference) && (!debtorFinName)) {
     return '';
   }
 
-  const debtorAccount = xml.match (/<DbtrAcct>\s*<Id>\s*<IBAN>\s*([A-Z0-9]+)\s*</);
-  const debtorBank1 = debtorName ? escapeXml (debtorName[1]) : '';
-  const debtorBank2 = debtorAccount ? debtorAccount[1] : '';
+  const debtorAccount = _(() => details.RltdPties[0].DbtrAcct[0].Id[0].IBAN[0]);
+  const debtorBank1 = escapeXml (debtorName) || '';
+  const debtorBank2 = debtorAccount || '';
   const debtorDetails = debtorBank1.length ? (debtorBank1 + (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : ''))
                                            : (debtorBank2.length ? formatIBAN (debtorBank2) : '-');
 
@@ -120,7 +120,7 @@ function getDetailsSummary (xml) {
   <tbody>
     <tr class="first-detail">
       <td>${T.movement}</td>
-      <td class="align-right">${credit ? credit[1] : '-'}</td>
+      <td class="align-right">${credit || '-'}</td>
     </tr>
     <tr>
       <td>${T.debtor}</td>
@@ -128,19 +128,19 @@ function getDetailsSummary (xml) {
     </tr>
     <tr>
       <td>${T.finInstitute}</td>
-      <td class="align-right">${debtorFinName ? escapeXml (debtorFinName[1]) : '-'}</td>
+      <td class="align-right">${escapeXml (debtorFinName) || '-'}</td>
     </tr>
     <tr>
       <td>${T.reference}</td>
-      <td class="align-right">${reference ? escapeXml (reference[1]) : '-'}</td>
+      <td class="align-right">${escapeXml (reference) || '-'}</td>
     </tr>
     <tr>
       <td>${T.charges}</td>
-      <td class="align-right">${charges ? `${charges[2]} ${charges[1]}` : '-'}</td>
+      <td class="align-right">${`${chargesAmount || '-'} ${chargesCurrency || ''}`}</td>
     </tr>
     <tr>
       <td>${T.amount}</td>
-      <td class="bold align-right">${amount[2]} ${amount[1]}</td>
+      <td class="bold align-right">${amount || '-'} ${currency || ''}</td>
     </tr>
 `;
 }
@@ -148,27 +148,21 @@ function getDetailsSummary (xml) {
 function getEntrySummary (entry) {
   const amount = _(() => entry.Amt[0]._);
   const currency = _(() => entry.Amt[0].$.Ccy);
-  const chargesAmount = -(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
-  const chargesCurrency = -(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
+  const chargesAmount = _(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
+  const chargesCurrency = _(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
   const infos   = _(() => entry.AddtlNtryInf[0]);
 
   const bookingDate = getDate (_(() => entry.BookgDt[0].Dt[0]));
   const valutaDate = getDate (_(() => entry.ValDt[0].Dt[0]));
 
   let details = '';
-/*  let start = 0;
-  while (true) {
-    start = xml.indexOf ('<TxDtls>', start);
-    if (start < 0) {
-      break;
+
+  for (var entryDetails of (entry.NtryDtls || [])) {
+    for (var txDetails of (entryDetails.TxDtls || [])) {
+      details += getDetailsSummary (txDetails);
     }
-    start += 8;
-    let end = xml.indexOf ('</TxDtls>', start);
-    if (end < 0) {
-      break;
-    }
-    details += getDetailsSummary (xml.substring (start, end));
-  }*/
+  }
+
 
   const title = splitLongLine (infos || '-', 40);
 
