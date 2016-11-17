@@ -175,6 +175,10 @@ function getEntrySummary (entry, bvrsInfo) {
   const bookingDate = getDate (_(() => entry.BookgDt[0].Dt[0]));
   const valutaDate = getDate (_(() => entry.ValDt[0].Dt[0]));
 
+  const origAmount = _(() => entry.AmtDtls[0].TxAmt[0].Amt[0]._);
+  const origCurrency = _(() => entry.AmtDtls[0].TxAmt[0].Amt[0].$.Ccy);
+  const exchangeRate = _(() => entry.AmtDtls[0].TxAmt[0].CcyXchg[0].XchgRate[0]);
+
   let details = '';
 
   for (var entryDetails of (entry.NtryDtls || [])) {
@@ -204,6 +208,19 @@ function getEntrySummary (entry, bvrsInfo) {
       <td class="bold align-right">${chargesAmount || '-'} ${chargesCurrency || ''}</td>
     </tr>`
   };
+
+  if (origAmount && origCurrency && exchangeRate) {
+    html += `
+    <tr>
+      <td>${T.origAmount}</td>
+      <td class="bold align-right">${origAmount || '-'} ${origCurrency || ''}</td>
+    </tr>
+    <tr>
+      <td>${T.exchangeRate}</td>
+      <td class="bold align-right">${exchangeRate || '-'}</td>
+    </tr>`
+  };
+
   html += `
     <tr>
       <td>${T.dateBooking}</td>
