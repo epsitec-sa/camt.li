@@ -7,6 +7,9 @@ var T = {
   customerAccount: 'Compte client',
   transactions: 'Transactions',
   transactionsNo: 'Nombre de transactions',
+  incomesNo: 'Nombre d\'encaissements BVR',
+  origAmount: 'Montant d\'origine',
+  exchangeRate: 'Taux d\'échange',
   openBalance: 'Solde d\'ouverture',
   closeBalance: 'Solde de clôture',
   dateValuta: 'Date valeur',
@@ -19,4 +22,5 @@ var T = {
   reference: 'Référence',
   charges: 'Frais',
   amount: 'Montant',
+  downloadV11: 'Telecharger fichiers V11'
 };
