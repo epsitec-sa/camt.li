@@ -171,7 +171,7 @@ function generateV11(document) {
     if (bLevel) {
       var transactions = _generateTransactions (bLevel);
 
-      return transactions.map ((transaction) => _translateToV11 (transaction)).join ('\n');
+      return transactions.map ((transaction) => _translateToV11 (transaction)).join ('\r\n');
     }
   }
 }
