@@ -1,12 +1,16 @@
 {
   "presets": [
     "stage-0",
-    "es2015"
+    "node5",
+    "react"
   ],
   "plugins": [
     "transform-react-display-name",
     "transform-decorators",
     "transform-class-properties",
-    "transform-es2015-classes"
+    "transform-es2015-classes",
+    "transform-es2015-arrow-functions",
+    "transform-es2015-for-of",
+    "transform-es2015-template-literals"
   ]
 }
