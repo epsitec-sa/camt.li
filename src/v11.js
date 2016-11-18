@@ -7,15 +7,12 @@ var padRight = require ('./utils.js').padRight;
 
 
 
-function _generateOrigin(bankTransactionCode)
-{
-    if (!bankTransactionCode)
-    {
+function _generateOrigin(bankTransactionCode) {
+    if (!bankTransactionCode) {
         return '03';
     }
 
-    switch (bankTransactionCode)
-    {
+    switch (bankTransactionCode) {
         case 'CDPT':
             return '01';
         case 'DMCT':
@@ -31,15 +28,12 @@ function _generateOrigin(bankTransactionCode)
 }
 
 
-function _padRightSpaces(input, length)
-{
-    if (!input)
-    {
+function _padRightSpaces(input, length) {
+    if (!input) {
         return padRight ('', length, ' ');
     }
 
-    if (input.length > length)
-    {
+    if (input.length > length) {
         throw 'length greater than maximum allowed for element ' + input;
     }
 
@@ -47,25 +41,20 @@ function _padRightSpaces(input, length)
     return padRight (input, length, ' ');    //	"xx" => "xx   "
 }
 
-function _padLeftZeroes(input, length)
-{
-    if (!input)
-    {
+function _padLeftZeroes(input, length) {
+    if (!input) {
         return padLeft ('', length, '0');
     }
 
-    if (input.length > length)
-    {
+    if (input.length > length) {
         throw 'length greater than maximum allowed for element '+ input;
     }
 
     return padLeft (input, length, '0');     //	"xx" => "000xx"
 }
 
-function _padWithoutDot(value, length)
-{
-    if (!value)
-    {
+function _padWithoutDot(value, length) {
+    if (!value) {
         return padRight ('', length, '0');
     }
 
