@@ -4,9 +4,11 @@
   "description": "ISO 20022 camt.05x inspection tool for end-users and support team.",
   "main": "lib/index.html",
   "scripts": {
-    "compile": "babel --out-dir lib src",
+    "browse": "browserify src/index.js > dist/index.js",
+    "babel": "babel --out-dir lib dist",
+    "compile": "npm run browse && npm run babel",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "chokidar \"src/**/*.js\" -c \"npm run compile\""
+    "watch": "chokidar \"dist/**/*.js\" -c \"npm run compile\""
   },
   "keywords": [
     "iso-20022",

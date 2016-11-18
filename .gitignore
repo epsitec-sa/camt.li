@@ -2,3 +2,4 @@ node_modules/
 upload-ftp.bat
 samples/
 lib/*.js
+dist/index.js
