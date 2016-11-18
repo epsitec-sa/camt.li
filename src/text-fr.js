@@ -22,4 +22,5 @@ var T = {
   reference: 'Référence',
   charges: 'Frais',
   amount: 'Montant',
+  downloadV11: 'Telecharger fichiers V11'
 };
