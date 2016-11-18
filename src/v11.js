@@ -5,7 +5,18 @@ var padLeft = require ('./utils.js').padLeft;
 var padRight = require ('./utils.js').padRight;
 
 
-
+const transactionCodesTable = {// camt.54, v11
+  '01': '01',
+  '03': '02',
+  '04': '11',
+  '11': '03',
+  '14': '13',
+  '21': '21',
+  '23': '23',
+  '31': '31',
+  '06': '06',
+  '46': '46'
+};
 
 function _generateOrigin(bankTransactionCode) {
     if (!bankTransactionCode) {
@@ -75,10 +86,40 @@ function _formatDate(dateStr) {
   return date.getFullYear ().toString () + month + day;
 }
 
+function _extractTransactionCode(code) {
+    if (code) {
+        if (Object.keys (transactionCodesTable).includes (code)) {
+            return transactionCodesTable[code];
+        }
+    }
+
+    return '01';
+}
+
+function _generateTransactionTypeCode(transactionCode, isCredit, reversalIndicator) {
+  if (!transactionCode || !reversalIndicator) {
+      return '1';
+  }
+
+  var isBvr = !(transactionCode === '06' || transactionCode === '46');
+
+  if (reversalIndicator) {
+      if (isBvr === isCredit) {
+          return '3'; // Rectification (correction)
+      }
+      else {
+          return '2'; // Contre-écriture (contre-passation)
+      }
+  }
+
+  return '1'; // Normal transaction
+}
+
 
 
 
 function _generateTransactionObject(details, clientBvrNumber, reversalIndicator, comptabilisationDate, processingDate) {
+  const transactionCode = _extractTransactionCode (_(() => details.Refs[0].Prtry[0].Tp[0]));
   const bankTransactionCode = _(() => details.BkTxCd[0].Domn[0].Fmly[0].SubFmlyCd[0]);
   const isCredit = details.CdtDbtInd[0] === 'CRDT' ? true : false;
   const bvrReferenceNumber = _(() => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]);
@@ -91,6 +132,7 @@ function _generateTransactionObject(details, clientBvrNumber, reversalIndicator,
 
   if (isCredit || (clientBvrNumber && bvrReferenceNumber)) {
     return {
+      transactionCode: transactionCode,
       bankTransactionCode: bankTransactionCode,
       isCredit: isCredit,
       reversalIndicator: reversalIndicator,
@@ -137,8 +179,8 @@ function _generateTransactions(bLevel) {
 
 
 function _translateToV11(transaction) {
-  return '00' +
-    '2' +
+  return _padLeftZeroes (transaction.transactionCode, 2) +
+    _generateTransactionTypeCode (transaction.transactionCode, transaction.isCredit, transaction.reversalIndicator) +
     _generateOrigin (transaction.bankTransactionCode) +
     '1' +
     _padLeftZeroes (transaction.clientBvrNumber, 9) +
