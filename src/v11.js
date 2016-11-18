@@ -74,9 +74,11 @@ function _padWithoutDot(value, length)
 }
 
 
-function _formatDate(dateStr)
-{
-  var date = dateStr ? new Date (dateStr) : new Date ();
+function _formatDate(dateStr) {
+  if (!dateStr) {
+    return '00000000';
+  }
+  var date = new Date (dateStr);
 
   var month = _padLeftZeroes ((date.getMonth () + 1).toString (), 2);
   var day = _padLeftZeroes (date.getDate ().toString (), 2);
