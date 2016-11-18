@@ -148,8 +148,6 @@ function _generateTransactions(bLevel) {
 
 
 function _translateToV11(transaction) {
-console.log(transaction)
-
   return '00' +
     '2' +
     _generateOrigin (transaction.bankTransactionCode) +
@@ -175,10 +173,18 @@ console.log(transaction)
 
 
 
-function generateV11(bLevel) {
-  var transactions = _generateTransactions (bLevel);
+function generateV11(document) {
+  var aLevel = (document.BkToCstmrStmt || document.BkToCstmrDbtCdtNtfctn)[0];
 
-  return transactions.map ((transaction) => _translateToV11 (transaction));
+  if (aLevel) {
+    var bLevel = (aLevel.Ntfctn || aLevel.Stmt)[0];
+
+    if (bLevel) {
+      var transactions = _generateTransactions (bLevel);
+
+      return transactions.map ((transaction) => _translateToV11 (transaction)).join ('\n');
+    }
+  }
 }
 
 
