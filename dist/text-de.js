@@ -1,5 +1,3 @@
-'use strict';
-
 var T = {
   undefinedFormat: 'Diese Datei wurde nicht erkannt.',
   camt53V4: 'camt.053 (V4) Datei',
@@ -8,6 +6,10 @@ var T = {
   creationDate: 'Erstellt am',
   customerAccount: 'Kundenkonto',
   transactions: 'Transaktionen',
+  transactionsNo: 'Anzahl der Transaktionen',
+  incomesNo: 'Anzahl des ESR',
+  origAmount: 'Ursprünglich Betrag',
+  exchangeRate: 'Tauschrate',
   openBalance: 'Eröffnungssaldo',
   closeBalance: 'Abschlusssaldo',
   dateValuta: 'Valuta',
@@ -19,5 +21,6 @@ var T = {
   finInstitute: 'Finanzinstitut',
   reference: 'Referenz',
   charges: 'Kosten',
-  amount: 'Betrag'
+  amount: 'Betrag',
+  downloadV11: 'V11 Datei herunterladen'
 };

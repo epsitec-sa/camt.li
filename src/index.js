@@ -1,93 +1,82 @@
 'use strict';
 
-/******************************************************************************/
+require('babel-polyfill');
+var parseString = require('xml2js').parseString;
+var escapeXml = require ('./utils.js').escapeXml;
+var splitLongLine = require ('./utils.js').splitLongLine;
+var _ = require ('./utils.js')._;
+var getDateTime = require ('./utils.js').getDateTime;
+var getDate = require ('./utils.js').getDate;
+var generateV11 = require ('./v11.js').generateV11;
+var JSZip = require ('jszip');
 
-function escapeXml (unsafe) {
-  return unsafe.replace (/[<>&'"]/g, function (c) {
-      switch (c) {
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '&': return '&amp;';
-      case '\'': return '&apos;';
-      case '"': return '&quot;';
-    }
-    });
-}
 
-function splitLongLine (text, length) {
-  let output = '';
-  while (text.length > length) {
-    output += text.substring (0, length);
-    output += '<br/>';
-    text = text.substring (40); 
-  }
-  output += text;
-  return output;
-}
+const camtXsds = {
+  '53V2': 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.02',
+  '54V2': 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.02',
+  '53V4': 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.04',
+  '54V4': 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.04'
+};
 
-/******************************************************************************/
 
-const xsdCamt53V2 = 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.02';
-const xsdCamt54V2 = 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.02';
-const xsdCamt53V4 = 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.04';
-const xsdCamt54V4 = 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.04';
 
-function formatDate (date) {
-  return `${date.substring (8, 10)}/${date.substring (5, 7)}/${date.substring (0, 4)}`;
-}
-function formatTime (time) {
-  return time;
-}
-
-function getDateTime (xml, pattern) {
-  pattern = `${pattern}(....-..-..)T(..:..:..)`;
-  const result = xml.match (pattern);
-  const date = formatDate (result[1]);
-  const time = formatTime (result[2]);
-  return `${date}, ${time}`;
-}
-
-function getDate (xml, pattern) {
-  pattern = `${pattern}(....-..-..)`;
-  const result = xml.match (pattern);
-  return formatDate (result[1]);
-}
-
-function getCreationDateTime (xml) {
+function getCreationDateTime (header) {
   // <CreDtTm>2016-05-06T23:01:15</CreDtTm>
-  return getDateTime (xml, '<CreDtTm>');
+  return getDateTime (_(() => header.CreDtTm[0])) || '-';
 }
+
+function getTransactionsNo (bLevel) {
+  let transactions = 0;
+
+  for (var entry of (bLevel.Ntry || [])) {
+    for (var entryDetails of (entry.NtryDtls || [])) {
+      transactions += parseInt (_(() => entryDetails.Btch[0].NbOfTxs[0]) || _(() => entryDetails.TxDtls.length) || 0);
+    }
+  }
+
+  return transactions;
+}
+
 
 function formatIBAN (iban) {
-  let out = '';
-  for (let i = 0; i < iban.length; i++) {
-    if ((i > 0) && ((i % 4) === 0)) {
-      out += ' ';
+  if (iban) {
+    let out = '';
+    for (let i = 0; i < iban.length; i++) {
+      if ((i > 0) && ((i % 4) === 0)) {
+        out += ' ';
+      }
+      out += iban[i];
     }
-    out += iban[i];
+    return out;
   }
-  return out;
 }
 
-function getDetailsSummary (xml) {
-  const amount = xml.match (/<Amt Ccy="(...)">\s*([\-0-9\.]+)\s*</);
-  const charges = xml.match (/<TtlChrgsAndTaxAmt Ccy="(...)">\s*([\-0-9\.]+)\s*</);
-  const credit = xml.match (/<CdtDbtInd>\s*([A-Z]+)\s*</);
-  const financialInstitution = xml.match (/<FinInstnId>\s*(.+)\s*<\/FinInstnId>/);
-  const debtorName = xml.match (/<RltdPties>\s*<Dbtr>\s*<Nm>\s*([^<]*)\s*<\/Nm>/);
-  const remittanceInformation = xml.match (/<RmtInf>\s*(.+)\s*<\/RmtInf>/);
-  const debtorFinName = financialInstitution && financialInstitution[1].match (/<Nm>\s*([a-zA-Z0-9_\-.:;+/ ]*)\s*</);
-  const reference = remittanceInformation && remittanceInformation[1].match (/<Ref>\s*(.*)\s*<\/Ref>/);
-  
+function getDetailsSummary (details, bvrsInfo) {
+  const amount = _(() => details.Amt[0]._);
+  const currency = _(() => details.Amt[0].$.Ccy);
+  const chargesAmount = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
+  const chargesCurrency = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
+  const credit = _(() => details.CdtDbtInd[0]);
+  const debtorName = _(() => details.RltdPties[0].Dbtr[0].Nm[0]);
+  const debtorFinName = _(() => details.RltdAgts[0].DbtrAgt[0].FinInstnId[0].Nm[0]);
+  const reference = _(() => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]);
+
   if ((!debtorName) && (!reference) && (!debtorFinName)) {
     return '';
   }
 
-  const debtorAccount = xml.match (/<DbtrAcct>\s*<Id>\s*<IBAN>\s*([A-Z0-9]+)\s*</);
-  const debtorBank1 = debtorName ? escapeXml (debtorName[1]) : '';
-  const debtorBank2 = debtorAccount ? debtorAccount[1] : '';
+  const debtorAccount = _(() => details.RltdPties[0].DbtrAcct[0].Id[0].IBAN[0]);
+  const debtorBank1 = escapeXml (debtorName) || '';
+  const debtorBank2 = debtorAccount || '';
   const debtorDetails = debtorBank1.length ? (debtorBank1 + (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : ''))
                                            : (debtorBank2.length ? formatIBAN (debtorBank2) : '-');
+
+
+  if (credit === 'CRDT' && reference) {
+    bvrsInfo.count = bvrsInfo.count + 1; // It is an ESR transaction
+  }
+
+
 
   return `
   </tbody>
@@ -96,7 +85,7 @@ function getDetailsSummary (xml) {
   <tbody>
     <tr class="first-detail">
       <td>${T.movement}</td>
-      <td class="align-right">${credit ? credit[1] : '-'}</td>
+      <td class="align-right">${credit || '-'}</td>
     </tr>
     <tr>
       <td>${T.debtor}</td>
@@ -104,48 +93,48 @@ function getDetailsSummary (xml) {
     </tr>
     <tr>
       <td>${T.finInstitute}</td>
-      <td class="align-right">${debtorFinName ? escapeXml (debtorFinName[1]) : '-'}</td>
+      <td class="align-right">${escapeXml (debtorFinName) || '-'}</td>
     </tr>
     <tr>
       <td>${T.reference}</td>
-      <td class="align-right">${reference ? escapeXml (reference[1]) : '-'}</td>
+      <td class="align-right">${escapeXml (reference) || '-'}</td>
     </tr>
     <tr>
       <td>${T.charges}</td>
-      <td class="align-right">${charges ? `${charges[2]} ${charges[1]}` : '-'}</td>
+      <td class="align-right">${`${chargesAmount || '-'} ${chargesCurrency || ''}`}</td>
     </tr>
     <tr>
       <td>${T.amount}</td>
-      <td class="bold align-right">${amount[2]} ${amount[1]}</td>
+      <td class="bold align-right">${amount || '-'} ${currency || ''}</td>
     </tr>
 `;
 }
 
-function getEntrySummary (xml) {
-  const amount  = xml.match (/<Amt Ccy="(...)">\s*([\-0-9\.]+)\s*<\/Amt/);
-  const charges = xml.match (/<TtlChrgsAndTaxAmt Ccy="(...)">\s*([\-0-9\.]+)\s*<\/TtlChrgsAndTaxAmt/);
-  const infos   = xml.match (/<AddtlNtryInf>\s*(.+)\s*<\/AddtlNtryInf/);
-  
-  const bookingDate = getDate (xml, '<BookgDt>\\s*<Dt>\\s*');
-  const valutaDate  = getDate (xml, '<ValDt>\\s*<Dt>\\s*');
-  
+function getEntrySummary (entry, bvrsInfo) {
+  const amount = _(() => entry.Amt[0]._);
+  const currency = _(() => entry.Amt[0].$.Ccy);
+  const chargesAmount = _(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
+  const chargesCurrency = _(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
+  const infos   = _(() => entry.AddtlNtryInf[0]);
+
+  const bookingDate = getDate (_(() => entry.BookgDt[0].Dt[0]));
+  const valutaDate = getDate (_(() => entry.ValDt[0].Dt[0]));
+
+  const origAmount = _(() => entry.AmtDtls[0].TxAmt[0].Amt[0]._);
+  const origCurrency = _(() => entry.AmtDtls[0].TxAmt[0].Amt[0].$.Ccy);
+  const exchangeRate = _(() => entry.AmtDtls[0].TxAmt[0].CcyXchg[0].XchgRate[0]);
+
   let details = '';
-  let start = 0;
-  while (true) {
-    start = xml.indexOf ('<TxDtls>', start);
-    if (start < 0) {
-      break;
+
+  for (var entryDetails of (entry.NtryDtls || [])) {
+    for (var txDetails of (entryDetails.TxDtls || [])) {
+      details += getDetailsSummary (txDetails, bvrsInfo);
     }
-    start += 8;
-    let end = xml.indexOf ('</TxDtls>', start);
-    if (end < 0) {
-      break;
-    }
-    details += getDetailsSummary (xml.substring (start, end));
   }
-  
-  const title = splitLongLine (infos ? infos[1] : '-', 40);
-  
+
+
+  const title = splitLongLine (infos || '-', 40);
+
   let html = `
 <table cellpadding="0" cellspacing="0" class="transaction">
   <caption>
@@ -154,23 +143,37 @@ function getEntrySummary (xml) {
   <tbody>
     <tr>
       <td>${T.total}</td>
-      <td class="bold align-right">${amount[2]} ${amount[1]}</td>
+      <td class="bold align-right">${amount || '-'} ${currency || ''}</td>
     </tr>`;
-  if (charges) {
+
+  if (chargesAmount && chargesCurrency) {
     html += `
     <tr>
       <td>${T.totalCharge}</td>
-      <td class="bold align-right">${charges[2]} ${charges[1]}</td>
+      <td class="bold align-right">${chargesAmount || '-'} ${chargesCurrency || ''}</td>
     </tr>`
   };
+
+  if (origAmount && origCurrency && exchangeRate) {
+    html += `
+    <tr>
+      <td>${T.origAmount}</td>
+      <td class="bold align-right">${origAmount || '-'} ${origCurrency || ''}</td>
+    </tr>
+    <tr>
+      <td>${T.exchangeRate}</td>
+      <td class="bold align-right">${exchangeRate || '-'}</td>
+    </tr>`
+  };
+
   html += `
     <tr>
       <td>${T.dateBooking}</td>
-      <td class="align-right">${bookingDate}</td>
+      <td class="align-right">${bookingDate || '-'}</td>
     </tr>
     <tr>
       <td>${T.dateValuta}</td>
-      <td class="align-right">${valutaDate}</td>
+      <td class="align-right">${valutaDate || '-'}</td>
     </tr>`;
  html += details;
  html += `
@@ -182,132 +185,140 @@ function getEntrySummary (xml) {
 
 /******************************************************************************/
 
-function getBalanceSummary (xml, output) {
-  const cd = xml.match (/<Cd>\s*(\w+)\s*<\/Cd>/);
-  const amount = xml.match (/<Amt Ccy="(...)">\s*([\-0-9\.]+)\s*<\/Amt/);
-  const date = getDate (xml, '<Dt>\\s*');
-  if (cd) {
-    switch (cd[1]) {
-      case 'OPBD':
-        output.open = `
-<table cellpadding="0" cellspacing="0" class="balance-open">
+function getBalanceSummary (balance, output) {
+  if (balance) {
+    const cd = _(() => balance.Tp[0].CdOrPrtry[0].Cd[0]);
+    const amount = _(() => balance.Amt[0]._);
+    const currency = _(() => balance.Amt[0].$.Ccy);
+    const date = getDate (_(() => balance.Dt[0].Dt[0]));
+    if (cd) {
+      switch (cd) {
+        case 'OPBD':
+          output.open = `
+  <table cellpadding="0" cellspacing="0" class="balance-open">
+    <tr>
+      <td>${T.openBalance} (${date || '-'})</td>
+      <td class="bold align-right">${amount || '-'} ${currency || ''}</td>
+    </tr>
+  </table>`;
+          break;
+        case 'CLBD':
+          output.close = `
+  <table cellpadding="0" cellspacing="0" class="balance-close">
   <tr>
-    <td>${T.openBalance} (${date})</td>
-    <td class="bold align-right">${amount[2]} ${amount[1]}</td>
+    <td>${T.closeBalance} (${date || '-'})</td>
+    <td class="bold align-right">${amount || '-'} ${currency || ''}</td>
   </tr>
-</table>`;
-        break;
-      case 'CLBD':
-        output.close = `
-<table cellpadding="0" cellspacing="0" class="balance-close">
-<tr>
-  <td>${T.closeBalance} (${date})</td>
-  <td class="bold align-right">${amount[2]} ${amount[1]}</td>
-</tr>
-</table>`;
-        break;
+  </table>`;
+          break;
+      }
     }
   }
 }
 
-function getEntriesSummaryNtry (xml, output) {
-  let start = 0;
-  
+function getEntriesSummaryNtry (bLevel, output) {
   output.entries = [];
-  
-  while (true) {
-    start = xml.indexOf ('<Ntry>', start);
-    if (start < 0) {
-      break;
-    }
-    start += 6;
-    let end = xml.indexOf ('</Ntry>', start);
-    if (end < 0) {
-      break;
-    }
-    const entry = xml.substring (start, end);
-    const html  = getEntrySummary (entry);
+  output.bvrsInfo = { count: 0 };
+
+  for (var entry of (bLevel.Ntry || [])) {
+    const html  = getEntrySummary (entry, output.bvrsInfo);
     if (html) {
       output.entries.push (html);
     }
   }
 }
 
-function getEntriesSummaryBal (xml, output) {
-  let start = 0;
-  while (true) {
-    start = xml.indexOf ('<Bal>', start);
-    if (start < 0) {
-      break;
-    }
-    start += 5;
-    let end = xml.indexOf ('</Bal>', start);
-    getBalanceSummary (xml.substring (start, end), output);
-  }
+function getEntriesSummaryBal (bLevel, output) {
+  getBalanceSummary (_(() => bLevel.Bal[0]), output);
+  getBalanceSummary (_(() => bLevel.Bal[1]), output);
 }
 
-function getEntriesSummary (xml, output) {
-  getEntriesSummaryNtry (xml, output);
-  getEntriesSummaryBal (xml, output);
+function getEntriesSummary (bLevel, output) {
+  getEntriesSummaryNtry (bLevel, output);
+  getEntriesSummaryBal (bLevel, output);
 }
 
-function getCustomerAccount (xml) {
-  const result = xml.match (/<Acct>\s*<Id>\s*<IBAN>\s*(CH\d+)/);
-  return result && `IBAN ${formatIBAN (result[1])}` || `-`;
+function getCustomerAccount (bLevel) {
+  const iban = formatIBAN (_(() => bLevel.Acct[0].Id[0].IBAN[0]));
+  return iban ? `IBAN ${iban}` : '-';
 }
 
 /******************************************************************************/
 
-function getXmlCamtReport (fileName, title, xml) {
+function getXmlCamtReport (fileName, title, aLevel) {
   let output = {};
   let transactions = '';
-  
-  getEntriesSummary (xml, output);
-  
-  if (output.entries.length) {
-    transactions += `<h2 class="">${T.transactions}</h2>`;
-    output.entries.forEach (entry => transactions += entry + '\n');
+  let bLevel = (aLevel.Ntfctn || aLevel.Stmt)[0];
+
+  if (bLevel) {
+    getEntriesSummary (bLevel, output);
+
+    if (output.entries.length) {
+      transactions += `<h2 class="">${T.transactions}</h2>`;
+      output.entries.forEach (entry => transactions += entry + '\n');
+    }
+
+    return `
+      <table cellpadding="0" cellspacing="0">
+        <caption>
+          <h1>${title}</h1>
+        </caption>
+        <tbody>
+          <tr>
+            <td>${T.fileName}</td>
+            <td>${escapeXml (fileName)}</td>
+          </tr>
+          <tr>
+            <td>${T.creationDate}</td>
+            <td>${getCreationDateTime (aLevel.GrpHdr[0])}</td>
+          </tr>
+          <tr>
+            <td>${T.customerAccount}</td>
+            <td>${getCustomerAccount (bLevel)}</td>
+          </tr>
+          <tr>
+            <td>${T.transactionsNo}</td>
+            <td>${getTransactionsNo (bLevel)}</td>
+          </tr>
+          <tr>
+            <td>${T.incomesNo}</td>
+            <td>${output.bvrsInfo.count}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    ${output.open || ''}
+    ${transactions}
+    ${output.close || ''}`;
   }
-  
-  return `
-<table cellpadding="0" cellspacing="0">
-  <caption>
-    <h1>${title}</h1>
-  </caption>
-  <tbody>
-    <tr>
-      <td>${T.fileName}</td>
-      <td>${escapeXml (fileName)}</td>
-    </tr>
-    <tr>
-      <td>${T.creationDate}</td>
-      <td>${getCreationDateTime (xml)}</td>
-    </tr>
-    <tr>
-      <td>${T.customerAccount}</td>
-      <td>${getCustomerAccount (xml)}</td>
-    </tr>
-  </tbody>
-</table>
-${output.open || ''}
-${transactions}
-${output.close || ''}`;
 }
 
-function getXmlReport (title, xml) {
-  if (xml.indexOf (`<Document xmlns="${xsdCamt53V2}" `) > 0) {
-    return getXmlCamtReport (title, T.camt53V2, xml);
-  }
-  if (xml.indexOf (`<Document xmlns="${xsdCamt53V4}" `) > 0) {
-    return getXmlCamtReport (title, T.camt53V4, xml);
-  }
-  if (xml.indexOf (`<Document xmlns="${xsdCamt54V2}" `) > 0) {
-    return getXmlCamtReport (title, T.camt54V2, xml);
-  }
-  if (xml.indexOf (`<Document xmlns="${xsdCamt54V4}" `) > 0) {
-    return getXmlCamtReport (title, T.camt54V4, xml);
-  }
-  return `<h1 class="error">${T.undefinedFormat}</h1>`;
+function getXmlReport (title, xml, callback) {
+  parseString(xml, function (err, result) {
+    if (err) {
+      callback (err);
+    }
+
+    for (var schema of Object.keys (camtXsds)) {
+      if (result.Document.$.xmlns === camtXsds[schema]) {
+        try {
+          var aLevel = result.Document.BkToCstmrStmt || result.Document.BkToCstmrDbtCdtNtfctn;
+          var html = getXmlCamtReport (title, T['camt' + schema], aLevel[0]);
+          var v11 = generateV11 (result.Document);
+
+          callback (null, html, v11);
+        }
+        catch (ex) {
+          callback (ex, `<h1 class="error">${T.undefinedFormat}</h1>`);
+        }
+        finally {
+          return;
+        }
+      }
+    }
+
+    callback (null, `<h1 class="error">${T.undefinedFormat}</h1>`);
+  });
 }
 
 /******************************************************************************/
@@ -348,23 +359,87 @@ function scrollTo (to, duration) {
 
 /******************************************************************************/
 
+
+function getDownloadLinkHtml(v11Files, callback) {
+  if (v11Files.length === 0) {
+    return '';
+  }
+  if (v11Files.length === 1) {
+    callback (null, `
+      <div id="downloadV11">
+        <a href="data:text/plain;charset=utf-8,${encodeURIComponent(v11Files[0].content)}" download="${v11Files[0].name}">
+          ${T.downloadV11}
+        </a>
+      </div>
+    `);
+  }
+  else {
+    var zip = new JSZip();
+
+    for (var file of v11Files) {
+      zip.file(file.name, file.content);
+    }
+
+    zip.generateAsync({type:"base64"})
+    .then((content) => {
+      callback (null, `
+        <div id="downloadV11">
+          <a href="data:application/octet-stream;base64,${content}" download="files.zip">
+            ${T.downloadV11}
+          </a>
+        </div>
+      `);
+    });
+  }
+
+
+  return ;
+}
+
+
 function handleFileSelect (evt) {
   evt.stopPropagation ();
   evt.preventDefault ();
 
+  const v11Files = [];
   const files = evt.dataTransfer.files;
   const output = document.getElementById ('output');
+
 
   while (output.firstChild) {
     output.removeChild (output.firstChild);
   }
+
+  const v11DownloadLink = document.createElement ('v11downloadlink');
+  output.insertBefore (v11DownloadLink, null);
 
   for (var i = 0; i < files.length; i++) {
     const xml     = files[i];
     const article = document.createElement ('article');
     const reader  = new FileReader ();
     reader.onload = e => {
-        article.innerHTML = getXmlReport (xml.name, e.target.result);
+        getXmlReport (xml.name, e.target.result, (err, html, v11) => {
+          if (err) {
+            console.log (err);
+          }
+
+          if (v11 && v11 !== '') {
+            v11Files.push ({
+              name: xml.name + '.v11',
+              content: v11
+            });
+          }
+
+          article.innerHTML = html;
+          getDownloadLinkHtml (v11Files, (err, result) => {
+            if (err) {
+              console.log (err);
+            }
+            else {
+              v11DownloadLink.innerHTML = result;
+            }
+          });
+        });
       };
     reader.readAsText (xml);
     output.insertBefore (article, null);
