@@ -18,3 +18,13 @@ More information about the project can be found on [this blog post](http://code.
 The graphic design of the site was done by Gilles Gfeller and the analysis logic
 by Pierre Arnaud (this is an example of _duct tape programming_). The background
 picture was shot above Preda (GR) in Switzerland.
+
+## Deployment
+
+```
+npm install
+npm run compile
+cd lib
+..\upload-ftp.bat
+cd ..
+```

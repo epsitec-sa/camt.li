@@ -6,10 +6,10 @@ var T = {
   creationDate: 'Erstellt am',
   customerAccount: 'Kundenkonto',
   transactions: 'Transaktionen',
-  transactionsNo: 'Anzahl der Transaktionen',
-  incomesNo: 'Anzahl des ESR',
-  origAmount: 'Ursprünglich Betrag',
-  exchangeRate: 'Tauschrate',
+  transactionsNo: 'Anzahl Transaktionen',
+  incomesNo: 'Anzahl ESR Einzahlungen',
+  origAmount: 'Betrag (Fremdwährung)',
+  exchangeRate: 'Wechselkurs',
   openBalance: 'Eröffnungssaldo',
   closeBalance: 'Abschlusssaldo',
   dateValuta: 'Valuta',
@@ -22,5 +22,5 @@ var T = {
   reference: 'Referenz',
   charges: 'Kosten',
   amount: 'Betrag',
-  downloadV11: 'V11 Datei herunterladen'
+  downloadV11: 'V11 erstellen'
 };
