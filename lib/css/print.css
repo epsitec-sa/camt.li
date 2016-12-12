@@ -13,13 +13,11 @@ a:hover {
 }
 body {
   font-family: 'Lato', sans-serif;
-  font-size: 100%;
+  font-size: .8em;
   padding: 0px;
   margin: 0px;
-  background: #005187;
-  background: url('/images/lake.jpg') no-repeat top center #005187;
-  background-size: 100% auto;
-  color: #fff;
+  background: none;
+  color: #222;
 }
 
 tr {
@@ -153,7 +151,7 @@ p.sub-title {
 
 article {
   padding: 1em;
-  border: 1px solid #ddd;
+  border: none;
   color: #222;
   margin-bottom: 2em;
 }
@@ -170,9 +168,9 @@ article h2 {
   width: 70%;
   margin: 2em auto .5em auto;
 }
-  
-article h3 { 
-  font-size: 1.2em; 
+
+article h3 {
+  font-size: .8em;
 }
 
 article table {
@@ -184,8 +182,9 @@ article table.top {
 }
 
 article table tr td {
+  padding: 0px;
+  font-size: .8em;
   border: none;
-  padding: .5em;
 }
 
 article table tbody tr:nth-child(odd) {
@@ -261,9 +260,9 @@ article table.transaction caption {
 
 footer {
   color: #fff;
-  background: rgba(0, 0, 0, 0.3);
   position: relative;
   padding: 50px 0px;
+  background: #fff;
 }
 
 .balance-open, .balance-close {
@@ -271,8 +270,8 @@ footer {
 }
 
 .boxes {
-  position: absolute;
-  top: -200px;
+  position: relative;
+  top :0px;
   margin: 0px auto;
 }
 
@@ -286,7 +285,7 @@ footer p {
 }
 
 footer .wrap {
-  margin-top: 100px;
+  display: none;
 }
 
 footer p.disclaimer {
@@ -297,31 +296,6 @@ footer p.disclaimer {
   width: 80%;
 }
 
-/* POUR PRINT */
-
-body {
-  background: none;
-  color: #222;
-}
-
 header, section.tools, .share, .downloadV11, v11downloadlink {
-  display: none;
-  }
-  
-.boxes {
-  position: relative;
-  top :0px;
-  margin: 0px auto;
-}
- 
-article {
-  border: none;
-}
-
-footer {
-  background: #fff;
-}
-
-footer .wrap {
   display: none;
 }
