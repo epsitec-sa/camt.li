@@ -1,0 +1,327 @@
+.clearfix {
+  clear: both;
+}
+a, a:link, a:focus, a:visited {
+  color: #fff;
+  text-decoration: none;
+	transition-duration: .3s;
+  transition-property: all;
+}
+a:hover {
+  text-decoration: underline;
+  color: red;
+}
+body {
+  font-family: 'Lato', sans-serif;
+  font-size: 100%;
+  padding: 0px;
+  margin: 0px;
+  background: #005187;
+  background: url('/images/lake.jpg') no-repeat top center #005187;
+  background-size: 100% auto;
+  color: #fff;
+}
+
+tr {
+  vertical-align: top;
+}
+
+.row {
+  max-width: 1280px;
+  margin: 0px auto;
+}
+
+.columns {
+  padding-left: 0.9375rem;
+  padding-right: 0.9375rem;
+}
+      
+.small-4 {
+  width: 33.3333%;
+  float: left;
+}
+
+.logo {
+  display: block;
+  float: left;
+  margin-right: 2em;
+  z-index: 999;
+}
+
+header {
+  text-align: left;
+  color: #fff;
+  padding: 2em 0px;
+  background: rgba(0, 0, 0, 0.3)
+}
+
+header .download {
+  background: #e42124;
+  padding: 1em 1.2em;
+  border-radius: 30px;
+}
+
+header .download:hover {
+  background: #c82d2f;
+}
+
+header .download i {
+  padding-left: .5em;
+}
+
+.language {
+  background:;
+  margin: 20px 0px 0px 1em;
+  font-size: .8em;
+}
+
+.language a {
+  color: #0095ec;
+}
+
+.language, .language .active, .language a:hover {
+  color: #fff;
+  font-weight: bolder;
+}
+
+.tools {
+  padding: 3em 0px;
+}
+
+p.lead {
+  text-transform: uppercase;
+  font-size: 2em;
+  font-weight: 900;
+  margin: 0px;
+}
+
+p.sub-title {
+  font-size: 1.2em;
+  font-weight: 900;
+  margin: 0px;
+}
+
+.drop {
+  color: #fff;
+  border:2px solid #fff;
+  font-size: 200%;
+  width: 60%;
+  min-width: fit-content;
+  line-height: 120px;
+  text-align: center;
+  border-radius: 200px;
+  transition-duration: .3s;
+  transition-property: all;
+  position: relative;
+  margin: 50px auto 0px auto;
+}
+.drop:hover {
+  color: #005187;
+  border:2px solid #005187;
+  background: #fff;
+  cursor: alias;
+}
+.drop span {
+  margin-left: 120px;
+  margin-right: 20px;
+}
+.drop i {
+  position: absolute;
+  display: block;
+  left: 20px;
+  top: 12px;
+  font-size: 3em;
+}      
+
+.wrapper {
+  padding: 2em;
+  background: #f5f5f5;
+}
+
+.share {
+  padding-bottom: 200px;
+}
+
+.sharebutton {
+  padding-left: 1em;
+  font-size: 2em;
+}
+
+.sharebutton:hover {
+  opacity: .5;
+}
+
+article {
+  padding: 1em;
+  border: 1px solid #ddd;
+  color: #222;
+  margin-bottom: 2em;
+}
+
+article h1 {
+  font-size: 2em; 
+}
+
+article h2 { 
+  font-size: 1em;
+  text-transform: uppercase;
+  color: #ccc;
+  display: block;
+  width: 70%;
+  margin: 2em auto .5em auto;
+}
+  
+article h3 { 
+  font-size: 1.2em; 
+}
+
+article table {
+  width: 100%;
+}
+
+article table.top {
+  margin-bottom: 2em;
+}
+
+article table tr td {
+  border: none;
+  padding: .5em;
+}
+
+article table tbody tr:nth-child(odd) {
+  background: #ddd;
+}
+
+article table.transaction {
+  width: 70%;
+  margin: 0px auto;
+  margin-bottom: 2em;
+}
+
+article table.details {
+  width: 60%;
+}
+
+article table.transaction caption {
+  text-align: left;
+}
+
+#downloadV11 {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  margin:4em 0px 2em 0px;
+}
+
+#downloadV11 a:link, #downloadV11 a:focus, #downloadV11 a:visited {
+  color: white;
+  padding: 1em 1.5em;
+  border-radius: 30px;
+  background-color: #005187;
+}
+
+#downloadV11 a:hover {
+  background-color: rgba(0, 81, 135, 0.5);
+}
+
+#downloadV11 a::before {
+    content: "\f078";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    margin: 0 10px 0 0;
+    text-decoration: none;
+}
+
+.first-detail {
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.bolder {
+  font-weight: 900;
+}
+
+.center {
+  text-align: center;
+}
+
+.note {
+  font-style: italic;
+  color: #fff;
+  line-height: 2em;
+}
+
+.align-right {
+  text-align: right;
+}
+
+footer {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.3);
+  position: relative;
+  padding: 50px 0px;
+}
+
+.balance-open, .balance-close {
+  font-size: 1.5em;
+}
+
+.boxes {
+  position: absolute;
+  top: -200px;
+  margin: 0px auto;
+}
+
+.boxes img {
+  width: 50%;
+  height: 50%;
+}
+
+footer p {
+  font-size: .8em;
+}
+
+footer .wrap {
+  margin-top: 100px;
+}
+
+footer p.disclaimer {
+  margin: 0px;
+  padding: 15px 0px 0px 0px;
+  opacity: .3;
+  float: left;
+  width: 80%;
+}
+
+/* POUR PRINT */
+
+body {
+  background: none;
+  color: #222;
+}
+
+header, section.tools, .share, .downloadV11, v11downloadlink {
+  display: none;
+  }
+  
+.boxes {
+  position: relative;
+  top :0px;
+  margin: 0px auto;
+}
+ 
+article {
+  border: none;
+}
+
+footer {
+  background: #fff;
+}
+
+footer .wrap {
+  display: none;
+}
