@@ -118,7 +118,7 @@ function _generateTransactionTypeCode(transactionCode, isCredit, reversalIndicat
 
 
 
-function _generateTransactionObject(details, clientBvrNumber, reversalIndicator, comptabilisationDate, processingDate) {
+function _generateTransactionObject(details, clientBvrNumber, reversalIndicator, accountingDate, processingDate) {
   const transactionCode = _extractTransactionCode (_(() => details.Refs[0].Prtry[0].Tp[0]));
   const bankTransactionCode = _(() => details.BkTxCd[0].Domn[0].Fmly[0].SubFmlyCd[0]);
   const isCredit = details.CdtDbtInd[0] === 'CRDT' ? true : false;
@@ -142,7 +142,7 @@ function _generateTransactionObject(details, clientBvrNumber, reversalIndicator,
       amount: amount,
       submissionDate: submissionDate,
       processingDate: processingDate,
-      comptabilisationDate: comptabilisationDate,
+      accountingDate: accountingDate,
       taxCurrency: taxCurrency,
       taxAmount: taxAmount
     };
