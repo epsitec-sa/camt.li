@@ -1,5 +1,7 @@
 var T = {
   undefinedFormat: 'Diese Datei wurde nicht erkannt.',
+  camt53V2: 'camt.053 (V2) Datei',
+  camt54V2: 'camt.054 (V2) Datei',
   camt53V4: 'camt.053 (V4) Datei',
   camt54V4: 'camt.054 (V4) Datei',
   fileName: 'Datei',
