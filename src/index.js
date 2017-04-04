@@ -6,6 +6,7 @@ var escapeXml = require ('./utils.js').escapeXml;
 var splitLongLine = require ('./utils.js').splitLongLine;
 var _ = require ('./utils.js')._;
 var getDateTime = require ('./utils.js').getDateTime;
+var formatAmount = require ('./utils.js').formatAmount;
 var getDate = require ('./utils.js').getDate;
 var generateV11 = require ('./v11.js').generateV11;
 var JSZip = require ('jszip');
@@ -52,10 +53,10 @@ function formatIBAN (iban) {
 }
 
 function getDetailsSummary (details, bvrsInfo) {
-  const amount = _(() => details.Amt[0]._);
+  const amount = formatAmount (_(() => details.Amt[0]._));
   const currency = _(() => details.Amt[0].$.Ccy);
-  const chargesAmount = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
-  const chargesCurrency = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
+  const chargesAmount = formatAmount (_(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0]._) || _(() => details.Chrgs[0].Rcrd[0].Amt[0]._));
+  const chargesCurrency = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy) || _(() => details.Chrgs[0].Rcrd[0].Amt[0].$.Ccy);
   const credit = _(() => details.CdtDbtInd[0]);
   const debtorName = _(() => details.RltdPties[0].Dbtr[0].Nm[0]);
   const debtorFinName = _(() => details.RltdAgts[0].DbtrAgt[0].FinInstnId[0].Nm[0]);
@@ -111,10 +112,10 @@ function getDetailsSummary (details, bvrsInfo) {
 }
 
 function getEntrySummary (entry, bvrsInfo) {
-  const amount = _(() => entry.Amt[0]._);
+  const amount = formatAmount (_(() => entry.Amt[0]._));
   const currency = _(() => entry.Amt[0].$.Ccy);
-  const chargesAmount = _(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
-  const chargesCurrency = _(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
+  const chargesAmount = formatAmount (_(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0]._)  || _(() => entry.Chrgs[0].Rcrd[0].Amt[0]._));
+  const chargesCurrency = _(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy)  || _(() => entry.Chrgs[0].Rcrd[0].Amt[0].$.Ccy);
   const infos   = _(() => entry.AddtlNtryInf[0]);
 
   const bookingDate = getDate (_(() => entry.BookgDt[0].Dt[0]));
@@ -188,7 +189,7 @@ function getEntrySummary (entry, bvrsInfo) {
 function getBalanceSummary (balance, output) {
   if (balance) {
     const cd = _(() => balance.Tp[0].CdOrPrtry[0].Cd[0]);
-    const amount = _(() => balance.Amt[0]._);
+    const amount = formatAmount (_(() => balance.Amt[0]._));
     const currency = _(() => balance.Amt[0].$.Ccy);
     const date = getDate (_(() => balance.Dt[0].Dt[0]));
     if (cd) {

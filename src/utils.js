@@ -20,6 +20,18 @@ function _formatTime (time) {
   return time;
 }
 
+function formatAmount(amount) {
+  if (amount == undefined) {
+    return null;
+  }
+
+  if (amount.startsWith ('.')) {
+    return '0' + amount;
+  }
+  else {
+    return amount;
+  }
+}
 
 
 function escapeXml (unsafe) {
@@ -87,5 +99,6 @@ module.exports.splitLongLine = splitLongLine;
 module.exports._ = _;
 module.exports.getDateTime = getDateTime;
 module.exports.getDate = getDate;
+module.exports.formatAmount = formatAmount;
 module.exports.padLeft = padLeft;
 module.exports.padRight = padRight;
