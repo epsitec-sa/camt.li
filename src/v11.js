@@ -130,7 +130,7 @@ function _generateTransactionObject(details, clientBvrNumber, reversalIndicator,
   const taxCurrency = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
 
 
-  if (isCredit || (clientBvrNumber && bvrReferenceNumber)) {
+  if (isCredit && clientBvrNumber && bvrReferenceNumber) {
     return {
       transactionCode: transactionCode,
       bankTransactionCode: bankTransactionCode,
