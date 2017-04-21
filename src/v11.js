@@ -69,8 +69,13 @@ function _padWithoutDot(value, length) {
         return padRight ('', length, '0');
     }
 
-    //	123.45 => "00012345"
-    return _padLeftZeroes (parseFloat (value).toFixed (2).replace ('.', ''), length);
+    try {
+      //	123.45 => "00012345"
+      return _padLeftZeroes (parseFloat (value).toFixed (2).replace ('.', ''), length);
+    } catch (e) {
+      console.log('warning (in padWithoutDot): ' + e);
+      return padRight ('', length, '0');
+    }
 }
 
 
@@ -78,12 +83,19 @@ function _formatDate(dateStr) {
   if (!dateStr) {
     return '00000000';
   }
-  var date = new Date (dateStr);
 
-  var month = _padLeftZeroes ((date.getMonth () + 1).toString (), 2);
-  var day = _padLeftZeroes (date.getDate ().toString (), 2);
+  try {
+    var date = new Date (dateStr);
 
-  return date.getFullYear ().toString () + month + day;
+    var month = _padLeftZeroes ((date.getMonth () + 1).toString (), 2);
+    var day = _padLeftZeroes (date.getDate ().toString (), 2);
+
+    return date.getFullYear ().toString () + month + day;
+  }
+  catch(e) {
+    console.log('warning (in formatDate): ' + e);
+    return '00000000';
+  }
 }
 
 function _extractTransactionCode(code) {

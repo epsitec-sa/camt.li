@@ -307,6 +307,7 @@ function getXmlReport (title, xml, callback) {
           var html = getXmlCamtReport (title, T['camt' + schema], aLevel[0]);
           var v11 = generateV11 (result.Document);
 
+          console.log ('Processing completed');
           callback (null, html, v11);
         }
         catch (ex) {
@@ -318,6 +319,7 @@ function getXmlReport (title, xml, callback) {
       }
     }
 
+    console.log ('Warning: namespace of document is ' + result.Document.$.xmlns);
     callback (null, `<h1 class="error">${T.undefinedFormat}</h1>`);
   });
 }
@@ -401,6 +403,8 @@ function getDownloadLinkHtml(v11Files, callback) {
 function handleFileSelect (evt) {
   evt.stopPropagation ();
   evt.preventDefault ();
+
+  console.log ('Starting processing');
 
   const v11Files = [];
   const files = evt.dataTransfer.files;
