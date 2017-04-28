@@ -24,7 +24,5 @@ picture was shot above Preda (GR) in Switzerland.
 ```
 npm install
 npm run compile
-cd lib
-..\upload-ftp.bat
-cd ..
+upload-ftp.bat
 ```
