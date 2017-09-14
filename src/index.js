@@ -1,7 +1,7 @@
 'use strict';
 
-require('babel-polyfill');
-var parseString = require('xml2js').parseString;
+require ('babel-polyfill');
+var parseString = require ('xml2js').parseString;
 var escapeXml = require ('./utils.js').escapeXml;
 var splitLongLine = require ('./utils.js').splitLongLine;
 var _ = require ('./utils.js')._;
@@ -11,27 +11,28 @@ var getDate = require ('./utils.js').getDate;
 var generateV11 = require ('./v11.js').generateV11;
 var JSZip = require ('jszip');
 
-
 const camtXsds = {
   '53V2': 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.02',
   '54V2': 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.02',
   '53V4': 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.04',
-  '54V4': 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.04'
+  '54V4': 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.04',
 };
-
-
 
 function getCreationDateTime (header) {
   // <CreDtTm>2016-05-06T23:01:15</CreDtTm>
-  return getDateTime (_(() => header.CreDtTm[0])) || '-';
+  return getDateTime (_ (() => header.CreDtTm[0])) || '-';
 }
 
 function getTransactionsNo (bLevel) {
   let transactions = 0;
 
-  for (var entry of (bLevel.Ntry || [])) {
-    for (var entryDetails of (entry.NtryDtls || [])) {
-      transactions += parseInt (_(() => entryDetails.Btch[0].NbOfTxs[0]) || _(() => entryDetails.TxDtls.length) || 0);
+  for (var entry of bLevel.Ntry || []) {
+    for (var entryDetails of entry.NtryDtls || []) {
+      transactions += parseInt (
+        _ (() => entryDetails.Btch[0].NbOfTxs[0]) ||
+          _ (() => entryDetails.TxDtls.length) ||
+          0
+      );
     }
   }
 
@@ -59,7 +60,7 @@ function formatIBAN (iban) {
   if (iban) {
     let out = '';
     for (let i = 0; i < iban.length; i++) {
-      if ((i > 0) && ((i % 4) === 0)) {
+      if (i > 0 && i % 4 === 0) {
         out += ' ';
       }
       out += iban[i];
@@ -80,31 +81,42 @@ function formatCredit (credit) {
 }
 
 function getDetailsSummary (details, bvrsInfo) {
-  const amount = formatAmount (_(() => details.Amt[0]._));
-  const currency = _(() => details.Amt[0].$.Ccy);
-  const chargesAmount = formatAmount (_(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0]._) || _(() => details.Chrgs[0].Rcrd[0].Amt[0]._));
-  const chargesCurrency = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy) || _(() => details.Chrgs[0].Rcrd[0].Amt[0].$.Ccy);
-  const credit = _(() => details.CdtDbtInd[0]);
-  const debtorName = _(() => details.RltdPties[0].Dbtr[0].Nm[0]);
-  const debtorFinName = _(() => details.RltdAgts[0].DbtrAgt[0].FinInstnId[0].Nm[0]);
-  const reference = _(() => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]);
+  const amount = formatAmount (_ (() => details.Amt[0]._));
+  const currency = _ (() => details.Amt[0].$.Ccy);
+  const chargesAmount = formatAmount (
+    _ (() => details.Chrgs[0].TtlChrgsAndTaxAmt[0]._) ||
+      _ (() => details.Chrgs[0].Rcrd[0].Amt[0]._)
+  );
+  const chargesCurrency =
+    _ (() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy) ||
+    _ (() => details.Chrgs[0].Rcrd[0].Amt[0].$.Ccy);
+  const credit = _ (() => details.CdtDbtInd[0]);
+  const debtorName = _ (() => details.RltdPties[0].Dbtr[0].Nm[0]);
+  const debtorFinName = _ (
+    () => details.RltdAgts[0].DbtrAgt[0].FinInstnId[0].Nm[0]
+  );
+  const reference = _ (() => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]);
+  const paymentMode = formatBankTransactionType (
+    _ (() => details.BkTxCd[0].Domn[0].Fmly[0].SubFmlyCd[0])
+  );
 
-  if ((!debtorName) && (!reference) && (!debtorFinName)) {
+  if (!debtorName && !reference && !debtorFinName) {
     return '';
   }
 
-  const debtorAccount = _(() => details.RltdPties[0].DbtrAcct[0].Id[0].IBAN[0]);
+  const debtorAccount = _ (
+    () => details.RltdPties[0].DbtrAcct[0].Id[0].IBAN[0]
+  );
   const debtorBank1 = escapeXml (debtorName) || '';
   const debtorBank2 = debtorAccount || '';
-  const debtorDetails = debtorBank1.length ? (debtorBank1 + (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : ''))
-                                           : (debtorBank2.length ? formatIBAN (debtorBank2) : '-');
-
+  const debtorDetails = debtorBank1.length
+    ? debtorBank1 +
+        (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : '')
+    : debtorBank2.length ? formatIBAN (debtorBank2) : '-';
 
   if (credit === 'CRDT' && reference) {
     bvrsInfo.count = bvrsInfo.count + 1; // It is an ESR transaction
   }
-
-
 
   return `
   </tbody>
@@ -143,27 +155,33 @@ function getDetailsSummary (details, bvrsInfo) {
 }
 
 function getEntrySummary (entry, bvrsInfo) {
-  const amount = formatAmount (_(() => entry.Amt[0]._));
-  const currency = _(() => entry.Amt[0].$.Ccy);
-  const chargesAmount = formatAmount (_(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0]._)  || _(() => entry.Chrgs[0].Rcrd[0].Amt[0]._));
-  const chargesCurrency = _(() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy)  || _(() => entry.Chrgs[0].Rcrd[0].Amt[0].$.Ccy);
-  const infos   = _(() => entry.AddtlNtryInf[0]);
+  const amount = formatAmount (_ (() => entry.Amt[0]._));
+  const currency = _ (() => entry.Amt[0].$.Ccy);
+  const chargesAmount = formatAmount (
+    _ (() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0]._) ||
+      _ (() => entry.Chrgs[0].Rcrd[0].Amt[0]._)
+  );
+  const chargesCurrency =
+    _ (() => entry.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy) ||
+    _ (() => entry.Chrgs[0].Rcrd[0].Amt[0].$.Ccy);
+  const infos = _ (() => entry.AddtlNtryInf[0]);
 
-  const bookingDate = getDate (_(() => entry.BookgDt[0].Dt[0]));
-  const valutaDate = getDate (_(() => entry.ValDt[0].Dt[0]));
+  const bookingDate = getDate (_ (() => entry.BookgDt[0].Dt[0]));
+  const valutaDate = getDate (_ (() => entry.ValDt[0].Dt[0]));
 
-  const origAmount = _(() => entry.AmtDtls[0].TxAmt[0].Amt[0]._);
-  const origCurrency = _(() => entry.AmtDtls[0].TxAmt[0].Amt[0].$.Ccy);
-  const exchangeRate = _(() => entry.AmtDtls[0].TxAmt[0].CcyXchg[0].XchgRate[0]);
+  const origAmount = _ (() => entry.AmtDtls[0].TxAmt[0].Amt[0]._);
+  const origCurrency = _ (() => entry.AmtDtls[0].TxAmt[0].Amt[0].$.Ccy);
+  const exchangeRate = _ (
+    () => entry.AmtDtls[0].TxAmt[0].CcyXchg[0].XchgRate[0]
+  );
 
   let details = '';
 
-  for (var entryDetails of (entry.NtryDtls || [])) {
-    for (var txDetails of (entryDetails.TxDtls || [])) {
+  for (var entryDetails of entry.NtryDtls || []) {
+    for (var txDetails of entryDetails.TxDtls || []) {
       details += getDetailsSummary (txDetails, bvrsInfo);
     }
   }
-
 
   const title = splitLongLine (infos || '-', 40);
 
@@ -183,8 +201,8 @@ function getEntrySummary (entry, bvrsInfo) {
     <tr>
       <td>${T.totalCharge}</td>
       <td class="bold align-right">${chargesAmount || '-'} ${chargesCurrency || ''}</td>
-    </tr>`
-  };
+    </tr>`;
+  }
 
   if (origAmount && origCurrency && exchangeRate) {
     html += `
@@ -195,8 +213,8 @@ function getEntrySummary (entry, bvrsInfo) {
     <tr>
       <td>${T.exchangeRate}</td>
       <td class="bold align-right">${exchangeRate || '-'}</td>
-    </tr>`
-  };
+    </tr>`;
+  }
 
   html += `
     <tr>
@@ -207,22 +225,22 @@ function getEntrySummary (entry, bvrsInfo) {
       <td>${T.dateValuta}</td>
       <td class="align-right">${valutaDate || '-'}</td>
     </tr>`;
- html += details;
- html += `
+  html += details;
+  html += `
   </tbody>
 </table>`;
 
-   return html;
+  return html;
 }
 
 /******************************************************************************/
 
 function getBalanceSummary (balance, output) {
   if (balance) {
-    const cd = _(() => balance.Tp[0].CdOrPrtry[0].Cd[0]);
-    const amount = formatAmount (_(() => balance.Amt[0]._));
-    const currency = _(() => balance.Amt[0].$.Ccy);
-    const date = getDate (_(() => balance.Dt[0].Dt[0]));
+    const cd = _ (() => balance.Tp[0].CdOrPrtry[0].Cd[0]);
+    const amount = formatAmount (_ (() => balance.Amt[0]._));
+    const currency = _ (() => balance.Amt[0].$.Ccy);
+    const date = getDate (_ (() => balance.Dt[0].Dt[0]));
     if (cd) {
       switch (cd) {
         case 'OPBD':
@@ -250,10 +268,10 @@ function getBalanceSummary (balance, output) {
 
 function getEntriesSummaryNtry (bLevel, output) {
   output.entries = [];
-  output.bvrsInfo = { count: 0 };
+  output.bvrsInfo = {count: 0};
 
-  for (var entry of (bLevel.Ntry || [])) {
-    const html  = getEntrySummary (entry, output.bvrsInfo);
+  for (var entry of bLevel.Ntry || []) {
+    const html = getEntrySummary (entry, output.bvrsInfo);
     if (html) {
       output.entries.push (html);
     }
@@ -261,8 +279,8 @@ function getEntriesSummaryNtry (bLevel, output) {
 }
 
 function getEntriesSummaryBal (bLevel, output) {
-  getBalanceSummary (_(() => bLevel.Bal[0]), output);
-  getBalanceSummary (_(() => bLevel.Bal[1]), output);
+  getBalanceSummary (_ (() => bLevel.Bal[0]), output);
+  getBalanceSummary (_ (() => bLevel.Bal[1]), output);
 }
 
 function getEntriesSummary (bLevel, output) {
@@ -271,7 +289,7 @@ function getEntriesSummary (bLevel, output) {
 }
 
 function getCustomerAccount (bLevel) {
-  const iban = formatIBAN (_(() => bLevel.Acct[0].Id[0].IBAN[0]));
+  const iban = formatIBAN (_ (() => bLevel.Acct[0].Id[0].IBAN[0]));
   return iban ? `IBAN ${iban}` : '-';
 }
 
@@ -287,7 +305,7 @@ function getXmlCamtReport (fileName, title, aLevel) {
 
     if (output.entries.length) {
       transactions += `<h2 class="">${T.transactions}</h2>`;
-      output.entries.forEach (entry => transactions += entry + '\n');
+      output.entries.forEach (entry => (transactions += entry + '\n'));
     }
 
     return `
@@ -326,7 +344,7 @@ function getXmlCamtReport (fileName, title, aLevel) {
 }
 
 function getXmlReport (title, xml, callback) {
-  parseString(xml, function (err, result) {
+  parseString (xml, function (err, result) {
     if (err) {
       callback (err);
     }
@@ -334,23 +352,25 @@ function getXmlReport (title, xml, callback) {
     for (var schema of Object.keys (camtXsds)) {
       if (result.Document.$.xmlns === camtXsds[schema]) {
         try {
-          var aLevel = result.Document.BkToCstmrStmt || result.Document.BkToCstmrDbtCdtNtfctn;
+          var aLevel =
+            result.Document.BkToCstmrStmt ||
+            result.Document.BkToCstmrDbtCdtNtfctn;
           var html = getXmlCamtReport (title, T['camt' + schema], aLevel[0]);
           var v11 = generateV11 (result.Document);
 
           console.log ('Processing completed');
           callback (null, html, v11);
-        }
-        catch (ex) {
+        } catch (ex) {
           callback (ex, `<h1 class="error">${T.undefinedFormat}</h1>`);
-        }
-        finally {
+        } finally {
           return;
         }
       }
     }
 
-    console.log ('Warning: namespace of document is ' + result.Document.$.xmlns);
+    console.log (
+      'Warning: namespace of document is ' + result.Document.$.xmlns
+    );
     callback (null, `<h1 class="error">${T.undefinedFormat}</h1>`);
   });
 }
@@ -358,10 +378,10 @@ function getXmlReport (title, xml, callback) {
 /******************************************************************************/
 
 function scrollTo (to, duration) {
-  const doc       = document.documentElement;
-  const body      = document.body;
-  const start     = doc.scrollTop;
-  const change    = to - start;
+  const doc = document.documentElement;
+  const body = document.body;
+  const start = doc.scrollTop;
+  const change = to - start;
   const increment = 20;
 
   //t = current time
@@ -382,7 +402,7 @@ function scrollTo (to, duration) {
   function animateScroll () {
     currentTime += increment;
     const val = easeInOutQuad (currentTime, start, change, duration);
-    doc.scrollTop  = val; // for IE
+    doc.scrollTop = val; // for IE
     body.scrollTop = val; // for Chrome
     if (currentTime < duration) {
       setTimeout (animateScroll, increment);
@@ -393,43 +413,44 @@ function scrollTo (to, duration) {
 
 /******************************************************************************/
 
-
-function getDownloadLinkHtml(v11Files, callback) {
+function getDownloadLinkHtml (v11Files, callback) {
   if (v11Files.length === 0) {
     return '';
   }
   if (v11Files.length === 1) {
-    callback (null, `
+    callback (
+      null,
+      `
       <div id="downloadV11">
-        <a href="data:text/plain;charset=utf-8,${encodeURIComponent(v11Files[0].content)}" download="${v11Files[0].name}">
+        <a href="data:text/plain;charset=utf-8,${encodeURIComponent (v11Files[0].content)}" download="${v11Files[0].name}">
           ${T.downloadV11}
         </a>
       </div>
-    `);
-  }
-  else {
-    var zip = new JSZip();
+    `
+    );
+  } else {
+    var zip = new JSZip ();
 
     for (var file of v11Files) {
-      zip.file(file.name, file.content);
+      zip.file (file.name, file.content);
     }
 
-    zip.generateAsync({type:"base64"})
-    .then((content) => {
-      callback (null, `
+    zip.generateAsync ({type: 'base64'}).then (content => {
+      callback (
+        null,
+        `
         <div id="downloadV11">
           <a href="data:application/octet-stream;base64,${content}" download="files.zip">
             ${T.downloadV11}
           </a>
         </div>
-      `);
+      `
+      );
     });
   }
 
-
-  return ;
+  return;
 }
-
 
 function handleFileSelect (evt) {
   evt.stopPropagation ();
@@ -441,7 +462,6 @@ function handleFileSelect (evt) {
   const files = evt.dataTransfer.files;
   const output = document.getElementById ('output');
 
-
   while (output.firstChild) {
     output.removeChild (output.firstChild);
   }
@@ -450,39 +470,38 @@ function handleFileSelect (evt) {
   output.insertBefore (v11DownloadLink, null);
 
   for (var i = 0; i < files.length; i++) {
-    const xml     = files[i];
+    const xml = files[i];
     const article = document.createElement ('article');
-    const reader  = new FileReader ();
+    const reader = new FileReader ();
     reader.onload = e => {
-        getXmlReport (xml.name, e.target.result, (err, html, v11) => {
+      getXmlReport (xml.name, e.target.result, (err, html, v11) => {
+        if (err) {
+          console.log (err);
+        }
+
+        if (v11 && v11 !== '') {
+          v11Files.push ({
+            name: xml.name + '.v11',
+            content: v11,
+          });
+        }
+
+        article.innerHTML = html;
+        getDownloadLinkHtml (v11Files, (err, result) => {
           if (err) {
             console.log (err);
+          } else {
+            v11DownloadLink.innerHTML = result;
           }
-
-          if (v11 && v11 !== '') {
-            v11Files.push ({
-              name: xml.name + '.v11',
-              content: v11
-            });
-          }
-
-          article.innerHTML = html;
-          getDownloadLinkHtml (v11Files, (err, result) => {
-            if (err) {
-              console.log (err);
-            }
-            else {
-              v11DownloadLink.innerHTML = result;
-            }
-          });
         });
-      };
+      });
+    };
     reader.readAsText (xml);
     output.insertBefore (article, null);
     scrollTo (650, 800);
-   }
+  }
 
-  output.style.display = "block";
+  output.style.display = 'block';
 }
 
 function handleDragOver (evt) {
