@@ -11,10 +11,13 @@ lang =
 if (lang.indexOf ('-') !== -1) lang = lang.split ('-')[0];
 if (lang.indexOf ('_') !== -1) lang = lang.split ('_')[0];
 switch (lang) {
-  case 'fr': document.location.href = 'http://camt.li/index-fr.html';
-  case 'de': document.location.href = 'http://camt.li/index-de.html';
-  default: document.location.href = 'http://camt.li/index-fr.html';
-}   
-    </script>
+  case 'fr':
+    document.location.href = './index-fr.html';
+  case 'de':
+    document.location.href = './index-de.html';
+  default:
+    document.location.href = './index-fr.html';
+}
+</script>
   </body>
 </html>
