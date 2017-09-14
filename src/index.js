@@ -68,6 +68,17 @@ function formatIBAN (iban) {
   }
 }
 
+function formatCredit (credit) {
+  if (credit) {
+    switch (credit) {
+      case 'CRDT':
+        return T.credit;
+      case 'DEBT':
+        return t.debt;
+    }
+  }
+}
+
 function getDetailsSummary (details, bvrsInfo) {
   const amount = formatAmount (_(() => details.Amt[0]._));
   const currency = _(() => details.Amt[0].$.Ccy);
@@ -102,7 +113,7 @@ function getDetailsSummary (details, bvrsInfo) {
   <tbody>
     <tr class="first-detail">
       <td>${T.movement}</td>
-      <td class="align-right">${credit || '-'}</td>
+      <td class="align-right">${formatCredit (credit) || '-'}</td>
     </tr>
     <tr>
       <td>${T.debtor}</td>
