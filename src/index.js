@@ -38,6 +38,22 @@ function getTransactionsNo (bLevel) {
   return transactions;
 }
 
+function formatBankTransactionType (bankTransactionCode) {
+  if (bankTransactionCode) {
+    switch (bankTransactionCode) {
+      case 'CDPT':
+        return T.cdpt;
+      case 'DMCT':
+        return T.dmct;
+      case 'AUTT':
+        return T.autt;
+      case 'ATXN':
+        return T.atxn;
+      default:
+        return bankTransactionCode;
+    }
+  }
+}
 
 function formatIBAN (iban) {
   if (iban) {
@@ -103,6 +119,10 @@ function getDetailsSummary (details, bvrsInfo) {
     <tr>
       <td>${T.charges}</td>
       <td class="align-right">${`${chargesAmount || '-'} ${chargesCurrency || ''}`}</td>
+    </tr>
+    <tr>
+      <td>${T.paymentMode}</td>
+      <td class="align-right">${escapeXml (paymentMode) || '-'}</td>
     </tr>
     <tr>
       <td>${T.amount}</td>
