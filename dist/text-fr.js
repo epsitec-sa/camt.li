@@ -24,5 +24,12 @@ var T = {
   reference: 'Référence',
   charges: 'Frais',
   amount: 'Montant',
-  downloadV11: 'Générer V11'
+  downloadV11: 'Générer V11',
+  paymentMode: 'Mode de paiement',
+  cdpt: 'Guichet postal',
+  autt: 'Transfert éléctronique',
+  dmct: 'Ordre de paiement',
+  atxn: 'EuroSIC',
+  credit: 'Crédit',
+  debt: 'Debit',
 };

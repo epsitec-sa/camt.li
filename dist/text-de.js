@@ -24,5 +24,12 @@ var T = {
   reference: 'Referenz',
   charges: 'Kosten',
   amount: 'Betrag',
-  downloadV11: 'V11 erstellen'
+  downloadV11: 'V11 erstellen',
+  paymentMode: 'Zahlungsart',
+  cdpt: 'Postbüro',
+  autt: 'Elektronische Transfer',
+  dmct: 'Zahlungsauftrag',
+  atxn: 'EuroSIC',
+  credit: 'Haben',
+  debt: 'Soll',
 };
