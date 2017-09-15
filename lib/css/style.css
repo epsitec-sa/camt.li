@@ -210,7 +210,7 @@ article table.transaction caption {
   display: flex;
   flex-grow: 1;
   flex-basis: 0;
-  justify-content:center;
+  justify-content: center;
   margin:4em 0px 2em 0px;
 }
 
@@ -220,7 +220,8 @@ article table.transaction caption {
   padding: 1em 1.5em;
   border-radius: 30px;
   background-color: #005187;
-  cursor:pointer;
+  align-items: center;
+  cursor: pointer;
 }
 
 #downloadV11::before {
