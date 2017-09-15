@@ -284,6 +284,39 @@ function _generateTotalRecordV3 (transactions) {
   );
 }
 
+function _generateTotalRecordV4 (transactions) {
+  const transaction = transactions[0];
+  const code = _generateTransactionTypeCodeV4 (
+    transaction.transactionCode,
+    transaction.isCredit,
+    transaction.reversalIndicator
+  ) === '2'
+    ? '2'
+    : '1';
+
+  return (
+    _padLeftZeroes (transaction.currency === 'CHF' ? '99' : '98', 2) +
+    code +
+    '99' +
+    '1' +
+    _padLeftZeroes (transaction.clientBvrNumber, 9) +
+    '999999999999999999999999999' + // Clé de tri
+    _padRightSpaces (transaction.currency, 3) +
+    _padWithoutDot (
+      ld_ (transactions).map (trans => trans.amount || 0.0).sum (),
+      12
+    ) +
+    _padLeftZeroes (transactions.length, 12) +
+    _formatDateV4 (transaction.submissionDate) +
+    _padRightSpaces (transaction.taxCurrency || transaction.currency, 3) +
+    _padWithoutDot (
+      ld_ (transactions).map (trans => trans.taxAmount || 0.0).sum (),
+      11
+    ) +
+    _padRightSpaces ('', 109)
+  );
+}
+
 function _generateTotalRecord (transactions, type) {
   switch (type) {
     case '3':
