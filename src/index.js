@@ -18,6 +18,8 @@ const camtXsds = {
   '54V4': 'urn:iso:std:iso:20022:tech:xsd:camt.054.001.04',
 };
 
+let v11Xmls = [];
+
 function getCreationDateTime (header) {
   // <CreDtTm>2016-05-06T23:01:15</CreDtTm>
   return getDateTime (_ (() => header.CreDtTm[0])) || '-';
@@ -356,10 +358,8 @@ function getXmlReport (title, xml, callback) {
             result.Document.BkToCstmrStmt ||
             result.Document.BkToCstmrDbtCdtNtfctn;
           var html = getXmlCamtReport (title, T['camt' + schema], aLevel[0]);
-          var v11 = generateV11 (result.Document);
 
-          console.log ('Processing completed');
-          callback (null, html, v11);
+          callback (null, html, result.Document);
         } catch (ex) {
           callback (ex, `<h1 class="error">${T.undefinedFormat}</h1>`);
         } finally {
@@ -413,20 +413,12 @@ function scrollTo (to, duration) {
 
 /******************************************************************************/
 
-function getDownloadLinkHtml (v11Files, callback) {
-  if (v11Files.length === 0) {
-    return '';
-  }
+function getDownloadLinkProperties (v11Files, callback) {
   if (v11Files.length === 1) {
     callback (
       null,
-      `
-      <div id="downloadV11">
-        <a href="data:text/plain;charset=utf-8,${encodeURIComponent (v11Files[0].content)}" download="${v11Files[0].name}">
-          ${T.downloadV11}
-        </a>
-      </div>
-    `
+      `data:text/plain;charset=utf-8,${encodeURIComponent (v11Files[0].content)}`,
+      v11Files[0].name
     );
   } else {
     var zip = new JSZip ();
@@ -438,18 +430,53 @@ function getDownloadLinkHtml (v11Files, callback) {
     zip.generateAsync ({type: 'base64'}).then (content => {
       callback (
         null,
-        `
-        <div id="downloadV11">
-          <a href="data:application/octet-stream;base64,${content}" download="files.zip">
-            ${T.downloadV11}
-          </a>
-        </div>
-      `
+        `data:application/octet-stream;base64,${content}`,
+        'files.zip'
       );
     });
   }
 
   return;
+}
+
+function generateFiles () {
+  const type = '4';
+  const v11Files = v11Xmls.map (xml => {
+    return {
+      name: xml.name + '.v11',
+      content: generateV11 (xml.content, type),
+    };
+  });
+
+  getDownloadLinkProperties (v11Files, (err, href, name) => {
+    if (err) {
+      console.log (err);
+    } else {
+      const dlink = document.createElement ('a');
+      document.body.appendChild (dlink);
+      dlink.download = name;
+      dlink.href = href;
+      dlink.onclick = function (e) {
+        // revokeObjectURL needs a delay to work properly
+        var that = this;
+        setTimeout (function () {
+          window.URL.revokeObjectURL (that.href);
+        }, 1500);
+      };
+
+      dlink.click ();
+      dlink.remove ();
+      document.body.removeChild (dlink);
+    }
+  });
+}
+
+function getDownloadLinkHtml () {
+  if (v11Xmls.length === 0) {
+    return '';
+  } else {
+    return `<div id="downloadV11"'>${T.downloadV11}</div>`;
+  }
 }
 
 function handleFileSelect (evt) {
@@ -458,7 +485,7 @@ function handleFileSelect (evt) {
 
   console.log ('Starting processing');
 
-  const v11Files = [];
+  v11Xmls = [];
   const files = evt.dataTransfer.files;
   const output = document.getElementById ('output');
 
@@ -470,33 +497,34 @@ function handleFileSelect (evt) {
   output.insertBefore (v11DownloadLink, null);
 
   for (var i = 0; i < files.length; i++) {
-    const xml = files[i];
+    const file = files[i];
     const article = document.createElement ('article');
     const reader = new FileReader ();
     reader.onload = e => {
-      getXmlReport (xml.name, e.target.result, (err, html, v11) => {
+      getXmlReport (file.name, e.target.result, (err, html, xml) => {
         if (err) {
           console.log (err);
         }
 
-        if (v11 && v11 !== '') {
-          v11Files.push ({
-            name: xml.name + '.v11',
-            content: v11,
+        if (xml && xml !== '') {
+          v11Xmls.push ({
+            name: file.name,
+            content: xml,
           });
         }
 
         article.innerHTML = html;
-        getDownloadLinkHtml (v11Files, (err, result) => {
-          if (err) {
-            console.log (err);
-          } else {
-            v11DownloadLink.innerHTML = result;
-          }
-        });
+        v11DownloadLink.innerHTML = getDownloadLinkHtml ();
+
+        try {
+          const downloadV11 = document.getElementById ('downloadV11');
+          downloadV11.addEventListener ('click', generateFiles, false);
+        } catch (e) {
+          console.log (e);
+        }
       });
     };
-    reader.readAsText (xml);
+    reader.readAsText (file);
     output.insertBefore (article, null);
     scrollTo (650, 800);
   }
