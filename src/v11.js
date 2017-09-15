@@ -259,6 +259,37 @@ function _generateTransactions (bLevel) {
   return transactions;
 }
 
+function _generateTotalRecordV3 (transactions) {
+  const transaction = transactions[0];
+  const type = _generateTransactionTypeCodeV3 (transaction).substr (2);
+
+  return (
+    _padLeftZeroes (type === '2' || type === '8' ? '999' : '995', 3) +
+    _padLeftZeroes (transaction.clientBvrNumber, 9) +
+    '999999999999999999999999999' + // Clé de tri
+    _padWithoutDot (ld_ (transactions).map (trans => trans.amount).sum (), 12) +
+    _padLeftZeroes (transactions.size (), 12) +
+    _formatDateV3 (transaction.submissionDate) +
+    _padWithoutDot (
+      ld_ (transactions).map (trans => trans.taxAmount || 0.0).sum (),
+      9
+    ) +
+    _padLeftZeroes ('', 9) +
+    _padRightSpaces ('', 13)
+  );
+}
+
+function _generateTotalRecord (transactions, type) {
+  switch (type) {
+    case '3':
+      return _generateTotalRecordV3 (transactions);
+    case '4':
+      return _generateTotalRecordV4 (transactions);
+    default:
+      return _generateTotalRecordV4 (transactions);
+  }
+}
+
 function _translateToType3V11 (transaction) {
   return (
     _padLeftZeroes (_generateTransactionTypeCodeV3 (transaction), 3) +
@@ -329,8 +360,9 @@ function generateV11 (document, type) {
           group =>
             group
               .map (transaction => _translateToV11 (transaction, type))
-              .join ('\r\n') + '\r\n' // +
-          //_generateTotalRecord (group, type)
+              .join ('\r\n') +
+            '\r\n' +
+            _generateTotalRecord (group, type)
         )
         .join ('\r\n');
     }
