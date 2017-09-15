@@ -78,8 +78,7 @@ function _padWithoutDot(value, length) {
     }
 }
 
-
-function _formatDate(dateStr) {
+function _formatDateV4 (dateStr) {
   if (!dateStr) {
     return '00000000';
   }
@@ -98,19 +97,41 @@ function _formatDate(dateStr) {
   }
 }
 
-function _extractTransactionCode(code) {
-    if (code) {
-        if (Object.keys (transactionCodesTable).includes (code)) {
-            return transactionCodesTable[code];
-        }
-    }
+function _formatDateV3 (dateStr) {
+  if (!dateStr) {
+    return '000000';
+  }
 
-    return '01';
+  try {
+    var date = new Date (dateStr);
+
+    var month = _padLeftZeroes ((date.getMonth () + 1).toString (), 2);
+    var day = _padLeftZeroes (date.getDate ().toString (), 2);
+
+    return date.getFullYear ().toString ().substr (2) + month + day;
+  } catch (e) {
+    console.log ('warning (in formatDate): ' + JSON.stringify (e));
+    return '000000';
+  }
 }
 
-function _generateTransactionTypeCode(transactionCode, isCredit, reversalIndicator) {
+function _extractTransactionCode (code) {
+  if (code) {
+    if (Object.keys (transactionCodesTable).includes (code)) {
+      return transactionCodesTable[code];
+    }
+  }
+
+  return '01';
+}
+
+function _generateTransactionTypeCodeV4 (
+  transactionCode,
+  isCredit,
+  reversalIndicator
+) {
   if (!transactionCode || !reversalIndicator) {
-      return '1';
+    return '1';
   }
 
   var isBvr = !(transactionCode === '06' || transactionCode === '46');
@@ -127,6 +148,42 @@ function _generateTransactionTypeCode(transactionCode, isCredit, reversalIndicat
   return '1'; // Normal transaction
 }
 
+function _generateTransactionTypeCodeV3 (transaction) {
+  const codeConversionTable = {
+    '0': '0',
+    '2': '0',
+    '1': '1',
+    '3': '1',
+  };
+  const originConversionTable = {
+    '01': '1',
+    '02': '3',
+    '03': '0',
+  };
+  const typesConversionTable = {
+    '1': '2',
+    '2': '5',
+    '3': '8',
+  };
+
+  const code = codeConversionTable[transaction.transactionCode.substr (0, 1)];
+
+  const origin = transaction.transactionCode === '02' // Remboursement
+    ? '2'
+    : originConversionTable[_generateOrigin (transaction.bankTransactionCode)];
+
+  const type =
+    typesConversionTable[
+      _generateTransactionTypeCodeV4 (
+        transaction.transactionCode,
+        transaction.isCredit,
+        transaction.reversalIndicator
+      )
+    ];
+
+  const result = code + origin + type;
+  return result !== '105' ? result : '104'; // Exception with 105
+}
 
 
 
@@ -187,12 +244,28 @@ function _generateTransactions(bLevel) {
   return transactions;
 }
 
+function _translateToType3V11 (transaction) {
+  return _padLeftZeroes (_generateTransactionTypeCodeV3 (transaction), 3) +
+  _padLeftZeroes (transaction.clientBvrNumber, 9) +
+  _padLeftZeroes (transaction.bvrReferenceNumber, 27) +
+  _padWithoutDot (transaction.amount, 10) +
+  '0000  0000' + // Depot reference
+  _formatDateV3 (transaction.submissionDate) +
+  _formatDateV3 (transaction.processingDate) +
+  _formatDateV3 (transaction.accountingDate) +
+  _padLeftZeroes ('', 9) + // N° microfilm
+    '0', +// rejection code
+  _padLeftZeroes ('', 9) + _padLeftZeroes ('', 4);
+}
 
-
-
-function _translateToV11(transaction) {
-  return _padLeftZeroes (transaction.transactionCode, 2) +
-    _generateTransactionTypeCode (transaction.transactionCode, transaction.isCredit, transaction.reversalIndicator) +
+function _translateToType4V11 (transaction) {
+  return (
+    _padLeftZeroes (transaction.transactionCode, 2) +
+    _generateTransactionTypeCodeV4 (
+      transaction.transactionCode,
+      transaction.isCredit,
+      transaction.reversalIndicator
+    ) +
     _generateOrigin (transaction.bankTransactionCode) +
     '1' +
     _padLeftZeroes (transaction.clientBvrNumber, 9) +
