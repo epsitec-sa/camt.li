@@ -33,7 +33,7 @@ tr {
   padding-left: 0.9375rem;
   padding-right: 0.9375rem;
 }
-      
+
 .small-4 {
   width: 33.3333%;
   float: left;
@@ -129,7 +129,7 @@ p.sub-title {
   left: 20px;
   top: 12px;
   font-size: 3em;
-}      
+}
 
 .wrapper {
   padding: 2em;
@@ -157,10 +157,10 @@ article {
 }
 
 article h1 {
-  font-size: 2em; 
+  font-size: 2em;
 }
 
-article h2 { 
+article h2 {
   font-size: 1em;
   text-transform: uppercase;
   color: #ccc;
@@ -225,7 +225,7 @@ article table.transaction caption {
 }
 
 #downloadV11 a::before {
-    content: "\f078";
+    content: "\f019";
     font-family: FontAwesome;
     font-style: normal;
     font-weight: normal;
