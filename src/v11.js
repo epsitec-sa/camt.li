@@ -3,6 +3,7 @@
 var _ = require ('./utils.js')._;
 var padLeft = require ('./utils.js').padLeft;
 var padRight = require ('./utils.js').padRight;
+var ld_ = require ('lodash');
 
 const transactionCodesTable = {
   // camt.54, v11
@@ -322,11 +323,16 @@ function generateV11 (document, type) {
     if (bLevel) {
       var transactions = _generateTransactions (bLevel);
 
-      return (
-        transactions
-          .map (transaction => _translateToV11 (transaction, type))
-          .join ('\r\n') + '\r\n'
-      );
+      return ld_ (transactions)
+        .groupBy (transaction => transaction.clientBvrNumber)
+        .map (
+          group =>
+            group
+              .map (transaction => _translateToV11 (transaction, type))
+              .join ('\r\n') + '\r\n' // +
+          //_generateTotalRecord (group, type)
+        )
+        .join ('\r\n');
     }
   }
 }
