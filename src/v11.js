@@ -259,17 +259,20 @@ function _generateTransactions (bLevel) {
 }
 
 function _translateToType3V11 (transaction) {
-  return _padLeftZeroes (_generateTransactionTypeCodeV3 (transaction), 3) +
-  _padLeftZeroes (transaction.clientBvrNumber, 9) +
-  _padLeftZeroes (transaction.bvrReferenceNumber, 27) +
-  _padWithoutDot (transaction.amount, 10) +
-  '0000  0000' + // Depot reference
-  _formatDateV3 (transaction.submissionDate) +
-  _formatDateV3 (transaction.processingDate) +
-  _formatDateV3 (transaction.accountingDate) +
-  _padLeftZeroes ('', 9) + // N° microfilm
-    '0', +// rejection code
-  _padLeftZeroes ('', 9) + _padLeftZeroes ('', 4);
+  return (
+    _padLeftZeroes (_generateTransactionTypeCodeV3 (transaction), 3) +
+    _padLeftZeroes (transaction.clientBvrNumber, 9) +
+    _padLeftZeroes (transaction.bvrReferenceNumber, 27) +
+    _padWithoutDot (transaction.amount, 10) +
+    '0000  0000' + // Depot reference
+    _formatDateV3 (transaction.submissionDate) +
+    _formatDateV3 (transaction.processingDate) +
+    _formatDateV3 (transaction.accountingDate) +
+    _padLeftZeroes ('', 9) + // N° microfilm
+    '0' + // rejection code
+    _padLeftZeroes ('', 9) +
+    _padWithoutDot (transaction.taxAmount, 4)
+  );
 }
 
 function _translateToType4V11 (transaction) {
@@ -292,7 +295,7 @@ function _translateToType4V11 (transaction) {
     _formatDateV4 (transaction.processingDate) +
     _formatDateV4 (transaction.accountingDate) +
     '0' +
-    _padRightSpaces (transaction.taxCurrency || 'CHF', 3) +
+    _padRightSpaces (transaction.taxCurrency || transaction.currency, 3) +
     '00' +
     _padWithoutDot (transaction.taxAmount, 4) +
     _padRightSpaces ('', 74)
