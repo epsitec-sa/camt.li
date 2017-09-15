@@ -4,8 +4,8 @@ var _ = require ('./utils.js')._;
 var padLeft = require ('./utils.js').padLeft;
 var padRight = require ('./utils.js').padRight;
 
-
-const transactionCodesTable = {// camt.54, v11
+const transactionCodesTable = {
+  // camt.54, v11
   '01': '01',
   '03': '02',
   '04': '11',
@@ -15,67 +15,68 @@ const transactionCodesTable = {// camt.54, v11
   '23': '23',
   '31': '31',
   '06': '06',
-  '46': '46'
+  '46': '46',
 };
 
-function _generateOrigin(bankTransactionCode) {
-    if (!bankTransactionCode) {
-        return '03';
-    }
+function _generateOrigin (bankTransactionCode) {
+  if (!bankTransactionCode) {
+    return '03';
+  }
 
-    switch (bankTransactionCode) {
-        case 'CDPT':
-            return '01';
-        case 'DMCT':
-            return '02';
-        case 'AUTT':
-            return '03';
-        case 'ATXN':
-            return '04';
+  switch (bankTransactionCode) {
+    case 'CDPT':
+      return '01';
+    case 'DMCT':
+      return '02';
+    case 'AUTT':
+      return '03';
+    case 'ATXN':
+      return '04';
 
-        default:
-            return '03';
-    }
+    default:
+      return '03';
+  }
 }
 
+function _padRightSpaces (input, length) {
+  if (!input) {
+    return padRight ('', length, ' ');
+  }
 
-function _padRightSpaces(input, length) {
-    if (!input) {
-        return padRight ('', length, ' ');
-    }
+  if (input.length > length) {
+    throw 'length greater than maximum allowed for element ' + input;
+  }
 
-    if (input.length > length) {
-        throw 'length greater than maximum allowed for element ' + input;
-    }
-
-
-    return padRight (input, length, ' ');    //	"xx" => "xx   "
+  return padRight (input, length, ' '); //	"xx" => "xx   "
 }
 
-function _padLeftZeroes(input, length) {
-    if (!input) {
-        return padLeft ('', length, '0');
-    }
+function _padLeftZeroes (input, length) {
+  if (!input) {
+    return padLeft ('', length, '0');
+  }
 
-    if (input.length > length) {
-        throw 'length greater than maximum allowed for element '+ input;
-    }
+  if (input.length > length) {
+    throw 'length greater than maximum allowed for element ' + input;
+  }
 
-    return padLeft (input, length, '0');     //	"xx" => "000xx"
+  return padLeft (input, length, '0'); //	"xx" => "000xx"
 }
 
-function _padWithoutDot(value, length) {
-    if (!value) {
-        return padRight ('', length, '0');
-    }
+function _padWithoutDot (value, length) {
+  if (!value) {
+    return padRight ('', length, '0');
+  }
 
-    try {
-      //	123.45 => "00012345"
-      return _padLeftZeroes (parseFloat (value).toFixed (2).replace ('.', ''), length);
-    } catch (e) {
-      console.log('warning (in padWithoutDot): ' + e);
-      return padRight ('', length, '0');
-    }
+  try {
+    //	123.45 => "00012345"
+    return _padLeftZeroes (
+      parseFloat (value).toFixed (2).replace ('.', ''),
+      length
+    );
+  } catch (e) {
+    console.log ('warning (in padWithoutDot): ' + JSON.stringify (e));
+    return padRight ('', length, '0');
+  }
 }
 
 function _formatDateV4 (dateStr) {
@@ -136,12 +137,11 @@ function _generateTransactionTypeCodeV4 (
   var isBvr = !(transactionCode === '06' || transactionCode === '46');
 
   if (reversalIndicator) {
-      if (isBvr === isCredit) {
-          return '3'; // Rectification (correction)
-      }
-      else {
-          return '2'; // Contre-écriture (contre-passation)
-      }
+    if (isBvr === isCredit) {
+      return '3'; // Rectification (correction)
+    } else {
+      return '2'; // Contre-écriture (contre-passation)
+    }
   }
 
   return '1'; // Normal transaction
@@ -184,19 +184,28 @@ function _generateTransactionTypeCodeV3 (transaction) {
   return result !== '105' ? result : '104'; // Exception with 105
 }
 
-
-
-function _generateTransactionObject(details, clientBvrNumber, reversalIndicator, accountingDate, processingDate) {
-  const transactionCode = _extractTransactionCode (_(() => details.Refs[0].Prtry[0].Tp[0]));
-  const bankTransactionCode = _(() => details.BkTxCd[0].Domn[0].Fmly[0].SubFmlyCd[0]);
-  const isCredit = _(() => details.CdtDbtInd[0]) === 'CRDT' ? true : false;
-  const bvrReferenceNumber = _(() => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]);
-  const currency = _(() => details.Amt[0].$.Ccy);
-  const amount = _(() => details.Amt[0]._);
-  const submissionDate = _(() => details.RltdDts[0].AccptncDtTm[0]);
-  const taxAmount = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
-  const taxCurrency = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
-
+function _generateTransactionObject (
+  details,
+  clientBvrNumber,
+  reversalIndicator,
+  accountingDate,
+  processingDate
+) {
+  const transactionCode = _extractTransactionCode (
+    _ (() => details.Refs[0].Prtry[0].Tp[0])
+  );
+  const bankTransactionCode = _ (
+    () => details.BkTxCd[0].Domn[0].Fmly[0].SubFmlyCd[0]
+  );
+  const isCredit = _ (() => details.CdtDbtInd[0]) === 'CRDT' ? true : false;
+  const bvrReferenceNumber = _ (
+    () => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]
+  );
+  const currency = _ (() => details.Amt[0].$.Ccy);
+  const amount = _ (() => details.Amt[0]._);
+  const submissionDate = _ (() => details.RltdDts[0].AccptncDtTm[0]);
+  const taxAmount = _ (() => details.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
+  const taxCurrency = _ (() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
 
   if (isCredit && clientBvrNumber && bvrReferenceNumber) {
     return {
@@ -212,26 +221,32 @@ function _generateTransactionObject(details, clientBvrNumber, reversalIndicator,
       processingDate: processingDate,
       accountingDate: accountingDate,
       taxCurrency: taxCurrency,
-      taxAmount: taxAmount
+      taxAmount: taxAmount,
     };
   }
 }
 
-
-
-function _generateTransactions(bLevel) {
+function _generateTransactions (bLevel) {
   var transactions = [];
 
-  for (var entry of (bLevel.Ntry || [])) {
-    const bookingDate = _(() => entry.BookgDt[0].Dt[0]);
-    const valutaDate = _(() => entry.ValDt[0].Dt[0]);
-    const clientBvrNumber = _(() => entry.NtryRef[0]);
-    const reversalIndicator = _(() => entry.RvslInd[0]) === 'true' ? true : false;
+  for (var entry of bLevel.Ntry || []) {
+    const bookingDate = _ (() => entry.BookgDt[0].Dt[0]);
+    const valutaDate = _ (() => entry.ValDt[0].Dt[0]);
+    const clientBvrNumber = _ (() => entry.NtryRef[0]);
+    const reversalIndicator = _ (() => entry.RvslInd[0]) === 'true'
+      ? true
+      : false;
 
-    for (var entryDetails of (entry.NtryDtls || [])) {
-      for (var txDetails of (entryDetails.TxDtls || [])) {
+    for (var entryDetails of entry.NtryDtls || []) {
+      for (var txDetails of entryDetails.TxDtls || []) {
         if (txDetails.Refs) {
-          var tx = _generateTransactionObject (txDetails, clientBvrNumber, reversalIndicator, valutaDate, bookingDate);
+          var tx = _generateTransactionObject (
+            txDetails,
+            clientBvrNumber,
+            reversalIndicator,
+            valutaDate,
+            bookingDate
+          );
           if (tx) {
             transactions.push (tx);
           }
@@ -280,7 +295,8 @@ function _translateToType4V11 (transaction) {
     _padRightSpaces (transaction.taxCurrency || 'CHF', 3) +
     '00' +
     _padWithoutDot (transaction.taxAmount, 4) +
-    _padRightSpaces ('', 74);
+    _padRightSpaces ('', 74)
+  );
 }
 
 function _translateToV11 (transaction, type) {
