@@ -203,9 +203,11 @@ function _generateTransactionObject (
     () => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]
   );
   const currency = _ (() => details.Amt[0].$.Ccy);
-  const amount = _ (() => details.Amt[0]._);
+  const amount = _ (() => parseFloat (details.Amt[0]._));
   const submissionDate = _ (() => details.RltdDts[0].AccptncDtTm[0]);
-  const taxAmount = _ (() => details.Chrgs[0].TtlChrgsAndTaxAmt[0]._);
+  const taxAmount = _ (() =>
+    parseFloat (details.Chrgs[0].TtlChrgsAndTaxAmt[0]._)
+  );
   const taxCurrency = _ (() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
 
   if (isCredit && clientBvrNumber && bvrReferenceNumber) {
@@ -267,8 +269,11 @@ function _generateTotalRecordV3 (transactions) {
     _padLeftZeroes (type === '2' || type === '8' ? '999' : '995', 3) +
     _padLeftZeroes (transaction.clientBvrNumber, 9) +
     '999999999999999999999999999' + // Clé de tri
-    _padWithoutDot (ld_ (transactions).map (trans => trans.amount).sum (), 12) +
-    _padLeftZeroes (transactions.size (), 12) +
+    _padWithoutDot (
+      ld_ (transactions).map (trans => trans.amount || 0.0).sum (),
+      12
+    ) +
+    _padLeftZeroes (transactions.length, 12) +
     _formatDateV3 (transaction.submissionDate) +
     _padWithoutDot (
       ld_ (transactions).map (trans => trans.taxAmount || 0.0).sum (),
