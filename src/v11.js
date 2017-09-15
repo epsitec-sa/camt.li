@@ -90,9 +90,8 @@ function _formatDateV4 (dateStr) {
     var day = _padLeftZeroes (date.getDate ().toString (), 2);
 
     return date.getFullYear ().toString () + month + day;
-  }
-  catch(e) {
-    console.log('warning (in formatDate): ' + e);
+  } catch (e) {
+    console.log ('warning (in formatDate): ' + JSON.stringify (e));
     return '00000000';
   }
 }
@@ -274,22 +273,28 @@ function _translateToType4V11 (transaction) {
     '00' +
     _padWithoutDot (transaction.amount, 10) +
     _padRightSpaces ('', 35) +
-    _formatDate (transaction.submissionDate) +
-    _formatDate (transaction.processingDate) +
-    _formatDate (transaction.accountingDate) +
+    _formatDateV4 (transaction.submissionDate) +
+    _formatDateV4 (transaction.processingDate) +
+    _formatDateV4 (transaction.accountingDate) +
     '0' +
-    _padRightSpaces (transaction.taxCurrency, 3) +
+    _padRightSpaces (transaction.taxCurrency || 'CHF', 3) +
     '00' +
     _padWithoutDot (transaction.taxAmount, 4) +
     _padRightSpaces ('', 74);
 }
 
+function _translateToV11 (transaction, type) {
+  switch (type) {
+    case '3':
+      return _translateToType3V11 (transaction);
+    case '4':
+      return _translateToType4V11 (transaction);
+    default:
+      return _translateToType4V11 (transaction);
+  }
+}
 
-
-
-
-
-function generateV11(document) {
+function generateV11 (document, type) {
   var aLevel = (document.BkToCstmrStmt || document.BkToCstmrDbtCdtNtfctn)[0];
 
   if (aLevel) {
@@ -298,10 +303,13 @@ function generateV11(document) {
     if (bLevel) {
       var transactions = _generateTransactions (bLevel);
 
-      return transactions.map ((transaction) => _translateToV11 (transaction)).join ('\r\n') + '\r\n';
+      return (
+        transactions
+          .map (transaction => _translateToV11 (transaction, type))
+          .join ('\r\n') + '\r\n'
+      );
     }
   }
 }
-
 
 module.exports.generateV11 = generateV11;
