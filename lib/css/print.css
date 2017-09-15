@@ -205,32 +205,34 @@ article table.transaction caption {
   text-align: left;
 }
 
-#downloadV11 {
-  width: 100%;
+#downloadV11Wrapper {
   display: flex;
-  justify-content: center;
-  align-items: end;
+  flex-grow: 1;
+  flex-basis: 0;
+  justify-content:center;
   margin:4em 0px 2em 0px;
 }
 
-#downloadV11 a:link, #downloadV11 a:focus, #downloadV11 a:visited {
+#downloadV11 {
+  display: flex;
   color: white;
   padding: 1em 1.5em;
   border-radius: 30px;
   background-color: #005187;
+  cursor:pointer;
 }
 
-#downloadV11 a:hover {
-  background-color: rgba(0, 81, 135, 0.5);
-}
-
-#downloadV11 a::before {
+#downloadV11::before {
     content: "\f019";
     font-family: FontAwesome;
     font-style: normal;
     font-weight: normal;
     margin: 0 10px 0 0;
     text-decoration: none;
+}
+
+#downloadV11:hover {
+  background-color: rgba(0, 81, 135, 0.5);
 }
 
 .first-detail {

@@ -475,7 +475,7 @@ function getDownloadLinkHtml () {
   if (v11Xmls.length === 0) {
     return '';
   } else {
-    return `<div id="downloadV11"'>${T.downloadV11}</div>`;
+    return `<div id="downloadV11Wrapper"><div id="downloadV11"'>${T.downloadV11}</div></div>`;
   }
 }
 
