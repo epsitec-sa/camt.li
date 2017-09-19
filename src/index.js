@@ -21,19 +21,20 @@ const camtXsds = {
 let v11Xmls = [];
 
 function readV11TypeCookie () {
-  var match = document.cookie.match (/^v11Type=(.+?);.*$/);
-
-  if (!match) {
+  if (typeof window.localStorage === 'undefined') {
+    console.log ('Local storage unsupported');
     return '4';
   }
 
-  return match[1];
+  return window.localStorage.getItem ('camtli_v11Type') || '4';
 }
 
 function writeV11TypeCookie (v11Type) {
-  var expireDate = new Date (2020, 1, 1, 12, 0, 0, 0);
-  document.cookie =
-    'v11Type=' + v11Type + '; expires=' + expireDate.toUTCString ();
+  if (typeof window.localStorage === 'undefined') {
+    console.log ('Local storage unsupported');
+  }
+
+  window.localStorage.setItem ('camtli_v11Type', v11Type);
 }
 
 function getCreationDateTime (header) {
