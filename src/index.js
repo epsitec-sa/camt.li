@@ -475,7 +475,29 @@ function getDownloadLinkHtml () {
   if (v11Xmls.length === 0) {
     return '';
   } else {
-    return `<div id="downloadV11Wrapper"><div id="downloadV11"'>${T.downloadV11}</div></div>`;
+    return `
+      <div id="downloadV11Container">
+        <div id="v11-type">
+          <form>
+            <table>
+              <tr>
+                <td style="width: 40%;"></td>
+                <td class="typeButton">
+                    <input type="radio" name="type" value="type-3" id="type-3" checked>
+                    <label for="type-3">${T.type3}</label>
+                </td>
+                <td class="typeButton">
+                    <input type="radio" name="type" value="type-4" id="type-4">
+                    <label for="type-4">${T.type4}</label>
+                </td>
+                <td style="width: 40%;"></td>
+              </tr>
+            </table>
+          </form>
+        </div>
+        <div id="downloadV11Wrapper"><div id="downloadV11"'>${T.downloadV11}</div></div>
+      </div>
+    `;
   }
 }
 
