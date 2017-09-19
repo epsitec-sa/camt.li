@@ -32,6 +32,6 @@ var T = {
   atxn: 'EuroSIC',
   credit: 'Crédit',
   debt: 'Debit',
-  typ3: 'Type 3',
-  typ4: 'Type 4',
+  type3: 'Type 3',
+  type4: 'Type 4',
 };
