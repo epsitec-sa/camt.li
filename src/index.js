@@ -481,8 +481,8 @@ function generateFiles () {
       };
 
       dlink.click ();
-      dlink.remove ();
       document.body.removeChild (dlink);
+      dlink.remove ();
     }
   });
 }
