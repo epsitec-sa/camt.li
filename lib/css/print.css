@@ -205,36 +205,10 @@ article table.transaction caption {
   text-align: left;
 }
 
-#downloadV11Wrapper {
-  display: flex;
-  flex-grow: 1;
-  flex-basis: 0;
-  justify-content: center;
-  margin:4em 0px 2em 0px;
+#downloadV11Container {
+  display: none;
 }
 
-#downloadV11 {
-  display: flex;
-  color: white;
-  padding: 1em 1.5em;
-  border-radius: 30px;
-  background-color: #005187;
-  align-items: center;
-  cursor: pointer;
-}
-
-#downloadV11::before {
-    content: "\f019";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    margin: 0 10px 0 0;
-    text-decoration: none;
-}
-
-#downloadV11:hover {
-  background-color: rgba(0, 81, 135, 0.5);
-}
 
 .first-detail {
 }
