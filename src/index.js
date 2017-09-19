@@ -20,6 +20,22 @@ const camtXsds = {
 
 let v11Xmls = [];
 
+function readV11TypeCookie () {
+  var match = document.cookie.match (/^v11Type=(.+?);.*$/);
+
+  if (!match) {
+    return '4';
+  }
+
+  return match[1];
+}
+
+function writeV11TypeCookie (v11Type) {
+  var expireDate = new Date (2020, 1, 1, 12, 0, 0, 0);
+  document.cookie =
+    'v11Type=' + v11Type + '; expires=' + expireDate.toUTCString ();
+}
+
 function getCreationDateTime (header) {
   // <CreDtTm>2016-05-06T23:01:15</CreDtTm>
   return getDateTime (_ (() => header.CreDtTm[0])) || '-';
@@ -440,7 +456,7 @@ function getDownloadLinkProperties (v11Files, callback) {
 }
 
 function generateFiles () {
-  const type = '4';
+  const type = readV11TypeCookie ();
   const v11Files = v11Xmls.map (xml => {
     return {
       name: xml.name + '.v11',
@@ -471,10 +487,16 @@ function generateFiles () {
   });
 }
 
+function handleTypeClick (type) {
+  writeV11TypeCookie (type);
+}
+
 function getDownloadLinkHtml () {
   if (v11Xmls.length === 0) {
     return '';
   } else {
+    var choise = readV11TypeCookie ();
+
     return `
       <div id="downloadV11Container">
         <div id="v11-type">
@@ -483,11 +505,11 @@ function getDownloadLinkHtml () {
               <tr>
                 <td style="width: 40%;"></td>
                 <td class="typeButton">
-                    <input type="radio" name="type" value="type-3" id="type-3" checked>
+                    <input type="radio" name="type" value="3" id="type-3" ${choise === '3' ? 'checked' : ''}>
                     <label for="type-3">${T.type3}</label>
                 </td>
                 <td class="typeButton">
-                    <input type="radio" name="type" value="type-4" id="type-4">
+                    <input type="radio" name="type" value="4" id="type-4" ${choise === '4' ? 'checked' : ''}>
                     <label for="type-4">${T.type4}</label>
                 </td>
                 <td style="width: 40%;"></td>
@@ -541,6 +563,15 @@ function handleFileSelect (evt) {
         try {
           const downloadV11 = document.getElementById ('downloadV11');
           downloadV11.addEventListener ('click', generateFiles, false);
+
+          const typeChoises = document.getElementsByName ('type');
+          typeChoises.forEach (choise => {
+            choise.addEventListener (
+              'click',
+              () => handleTypeClick (choise.value),
+              false
+            );
+          });
         } catch (e) {
           console.log (e);
         }
