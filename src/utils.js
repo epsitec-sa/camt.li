@@ -92,11 +92,31 @@ function getDate (xml) {
   }
 }
 
+function readStorageValue (name, defaultValue) {
+  if (typeof window.localStorage === 'undefined') {
+    console.log ('Local storage unsupported');
+    return defaultValue;
+  }
+
+  return window.localStorage.getItem ('camtli_' + name) || defaultValue;
+}
+
+function writeStorageValue (name, value) {
+  if (typeof window.localStorage === 'undefined') {
+    console.log ('Local storage unsupported');
+  }
+
+  window.localStorage.setItem ('camtli_' + name, value);
+}
 
 
 module.exports.escapeXml = escapeXml;
 module.exports.splitLongLine = splitLongLine;
 module.exports._ = _;
+
+module.exports.readStorageValue = readStorageValue;
+module.exports.writeStorageValue = writeStorageValue;
+
 module.exports.getDateTime = getDateTime;
 module.exports.getDate = getDate;
 module.exports.formatAmount = formatAmount;
