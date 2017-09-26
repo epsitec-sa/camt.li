@@ -339,8 +339,8 @@ footer p.disclaimer {
 }
 
 /*___________________________________
-  
-  ACCORDEON  
+
+  ACCORDEON
 ___________________________________*/
 
 .typeButton {
@@ -389,11 +389,12 @@ div.panel {
 }
 
 /*___________________________________
-  
-  MESSAGE D'ERREUR   
+
+  MESSAGE D'ERREUR
 ___________________________________*/
 
 div#errorMessage {
+  margin-top: 2em;
   background: #222;
   color: #fff;
   padding: 1em;
@@ -408,9 +409,9 @@ div#errorMessage .wrap {
 }
 
 div#errorMessage .wrapper h3 {
-  
+
 }
 
 div#errorMessage .wrapper p {
-  
+
 }

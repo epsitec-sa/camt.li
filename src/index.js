@@ -457,15 +457,40 @@ function getDownloadLinkProperties (v11Files, callback) {
   return;
 }
 
+function showErrorBox() {
+  var messageBox = document.getElementById ('errorMessage');
+  messageBox.style.display = 'inline';
+}
+
+function hideErrorBox() {
+  var messageBox = document.getElementById ('errorMessage');
+  messageBox.style.display = 'none';
+}
+
 function generateFiles () {
+  hideErrorBox ();
+
   const type = readV11Type ();
   const separator = readV11Crlf () === 'on' ? '\r\n' : '';
+  var errors = false;
+
   const v11Files = v11Xmls.map (xml => {
+    var result = generateV11 (xml.content, type, separator);
+
+    if (result.errors) {
+      errors = true;
+    }
+
     return {
       name: xml.name + '.v11',
-      content: generateV11 (xml.content, type, separator),
+      content: result.content,
     };
   });
+
+  if (errors) {
+    showErrorBox ();
+  }
+
 
   getDownloadLinkProperties (v11Files, (err, href, name) => {
     if (err) {
@@ -532,8 +557,8 @@ function getDownloadLinkHtml () {
         <div id="downloadV11Wrapper"><div id="downloadV11">${T.downloadV11}</div></div>
         <div id="errorMessage">
           <div class="wrap">
-            <h3>${T.errorMessageTitle}</h3>
-            <p>${T.errorMessageContent}</p>
+            <h3 id="messageTitle" >${T.errorMessageTitle}</h3>
+            <p id="messageContent" >${T.errorMessageContent}</p>
           </div>
         </div>
       </div>
