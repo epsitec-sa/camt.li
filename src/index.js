@@ -489,37 +489,52 @@ function generateFiles () {
   });
 }
 
-function handleTypeClick (type) {
-  writeV11TypeCookie (type);
-}
-
 function getDownloadLinkHtml () {
   if (v11Xmls.length === 0) {
     return '';
   } else {
-    var choise = readV11TypeCookie ();
+    var typeChoise = readV11Type ();
+    var crlfChoise = readV11Crlf ();
+    console.log('crlf: ' + crlfChoise)
 
     return `
       <div id="downloadV11Container">
         <div id="v11-type">
-          <form>
-            <table>
-              <tr>
-                <td style="width: 40%;"></td>
-                <td class="typeButton">
-                    <input type="radio" name="type" value="3" id="type-3" ${choise === '3' ? 'checked' : ''}>
-                    <label for="type-3">${T.type3}</label>
-                </td>
-                <td class="typeButton">
-                    <input type="radio" name="type" value="4" id="type-4" ${choise === '4' ? 'checked' : ''}>
-                    <label for="type-4">${T.type4}</label>
-                </td>
-                <td style="width: 40%;"></td>
-              </tr>
-            </table>
-          </form>
+          <button class="accordion">Paramètres</button>
+          <div class="panel">
+            <form>
+              <table>
+                <tr>
+                  <td class="typeButton" style="width: 20%;">
+                      <input type="radio" name="type" value="3" id="type-3" ${typeChoise === '3' ? 'checked' : ''}>
+                      <label for="type-3">${T.type3}</label>
+                  </td>
+                  <td class="typeButton" style="width: 10%;">
+                      <input type="radio" name="type" value="4" id="type-4" ${typeChoise === '4' ? 'checked' : ''}>
+                      <label for="type-4">${T.type4}</label>
+                  </td>
+                  <td style="width: 10%; border-right: 1px solid #ddd;"></td>
+                  <td style="width: 10%;"></td>
+                  <td class="typeButton" style="width: 10%;">
+                      <input type="radio" name="crlf" value="on" id="crlf-on" ${crlfChoise === 'on' ? 'checked' : ''}>
+                      <label for="crlf-on">${T.withCrlf}</label>
+                  </td>
+                  <td class="typeButton" style="width: 20%;">
+                      <input type="radio" name="crlf" value="off" id="crlf-off" ${crlfChoise === 'off' ? 'checked' : ''}>
+                      <label for="crlf-off">${T.withoutCrlf}</label>
+                  </td>
+                </tr>
+              </table>
+            </form>
+          </div>
         </div>
-        <div id="downloadV11Wrapper"><div id="downloadV11"'>${T.downloadV11}</div></div>
+        <div id="downloadV11Wrapper"><div id="downloadV11">${T.downloadV11}</div></div>
+        <div id="errorMessage">
+          <div class="wrap">
+            <h3>${T.errorMessageTitle}</h3>
+            <p>${T.errorMessageContent}</p>
+          </div>
+        </div>
       </div>
     `;
   }
