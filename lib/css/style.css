@@ -337,3 +337,80 @@ footer p.disclaimer {
   float: left;
   width: 80%;
 }
+
+/*___________________________________
+  
+  ACCORDEON  
+___________________________________*/
+
+.typeButton {
+  height: 100px;
+  vertical-align: middle;
+}
+
+button.accordion {
+    background-color: #eee;
+    cursor: pointer;
+    padding: 1em;
+    width: 100%;
+    border: none;
+    background: none;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    outline: none;
+    font-size: 1em;
+    transition: 0.3s;
+}
+
+button.accordion.active, button.accordion:hover {
+    background-color: #eee;
+}
+
+button.accordion:after {
+    font-family: FontAwesome;
+    content: "\f085";
+    color: #777;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+button.accordion.active:after {
+    content: "\f085";
+}
+
+div.panel {
+    padding: 0 18px;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.10);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+/*___________________________________
+  
+  MESSAGE D'ERREUR   
+___________________________________*/
+
+div#errorMessage {
+  background: #222;
+  color: #fff;
+  padding: 1em;
+  display: none;
+}
+
+div#errorMessage .wrap {
+  border: 1px solid #fff;
+  padding: 2em;
+  background: #222;
+  margin-top : 0px;
+}
+
+div#errorMessage .wrapper h3 {
+  
+}
+
+div#errorMessage .wrapper p {
+  
+}
