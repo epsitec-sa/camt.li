@@ -30,12 +30,12 @@ function writeV11Type (value) {
   writeStorageValue ('v11Type', value);
 }
 
-function writeV11TypeCookie (v11Type) {
-  if (typeof window.localStorage === 'undefined') {
-    console.log ('Local storage unsupported');
-  }
+function readV11Crlf () {
+  return readStorageValue ('v11Crlf', 'on');
+}
 
-  window.localStorage.setItem ('camtli_v11Type', v11Type);
+function writeV11Crlf (value) {
+  writeStorageValue ('v11Crlf', value);
 }
 
 function getCreationDateTime (header) {
@@ -458,11 +458,12 @@ function getDownloadLinkProperties (v11Files, callback) {
 }
 
 function generateFiles () {
-  const type = readV11TypeCookie ();
+  const type = readV11Type ();
+  const separator = readV11Crlf () === 'on' ? '\r\n' : '';
   const v11Files = v11Xmls.map (xml => {
     return {
       name: xml.name + '.v11',
-      content: generateV11 (xml.content, type),
+      content: generateV11 (xml.content, type, separator),
     };
   });
 
@@ -604,7 +605,16 @@ function handleFileSelect (evt) {
           typeChoises.forEach (choise => {
             choise.addEventListener (
               'click',
-              () => handleTypeClick (choise.value),
+              () => writeV11Type (choise.value),
+              false
+            );
+          });
+
+          const crlfChoises = document.getElementsByName ('crlf');
+          crlfChoises.forEach (choise => {
+            choise.addEventListener (
+              'click',
+              () => writeV11Crlf (choise.value),
               false
             );
           });
