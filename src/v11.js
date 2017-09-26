@@ -383,7 +383,7 @@ function _translateToV11 (transaction, type) {
   }
 }
 
-function generateV11 (document, type) {
+function generateV11 (document, type, separator) {
   var aLevel = (document.BkToCstmrStmt || document.BkToCstmrDbtCdtNtfctn)[0];
 
   if (aLevel) {
@@ -398,11 +398,11 @@ function generateV11 (document, type) {
           group =>
             group
               .map (transaction => _translateToV11 (transaction, type))
-              .join ('\r\n') +
-            '\r\n' +
+              .join (separator) +
+            separator +
             _generateTotalRecord (group, type)
         )
-        .join ('\r\n');
+        .join (separator);
     }
   }
 }
