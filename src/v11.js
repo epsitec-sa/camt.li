@@ -373,13 +373,22 @@ function _translateToType4V11 (transaction) {
 }
 
 function _translateToV11 (transaction, type) {
-  switch (type) {
-    case '3':
-      return _translateToType3V11 (transaction);
-    case '4':
-      return _translateToType4V11 (transaction);
-    default:
-      return _translateToType4V11 (transaction);
+  try {
+    switch (type) {
+      case '3':
+        return _translateToType3V11 (transaction);
+      case '4':
+        return _translateToType4V11 (transaction);
+      default:
+        return _translateToType4V11 (transaction);
+    }
+  }
+  catch (err) {
+    console.error ('error generating v11 for transaction:');
+    console.dir (transaction);
+    console.dir (err);
+
+    return null;
   }
 }
 
@@ -391,18 +400,32 @@ function generateV11 (document, type, separator) {
 
     if (bLevel) {
       var transactions = _generateTransactions (bLevel);
+      var errors = false;
 
-      return ld_ (transactions)
+      var content = ld_ (transactions)
         .groupBy (transaction => transaction.clientBvrNumber)
         .map (
           group =>
             group
               .map (transaction => _translateToV11 (transaction, type))
+              .filter (line => {
+                if (line == undefined) {
+                  errors = true;
+                  return false;
+                }
+
+                return true;
+              })
               .join (separator) +
             separator +
             _generateTotalRecord (group, type)
         )
         .join (separator);
+
+      return {
+        content: content,
+        errors: errors
+      };
     }
   }
 }
