@@ -525,6 +525,23 @@ function getDownloadLinkHtml () {
   }
 }
 
+function accordion() {
+  var acc = document.getElementsByClassName("accordion");
+  var i;
+
+  for (i = 0; i < acc.length; i++) {
+    acc[i].onclick = function() {
+      this.classList.toggle("active");
+      var panel = this.nextElementSibling;
+      if (panel.style.maxHeight){
+        panel.style.maxHeight = null;
+      } else {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      }
+    }
+  }
+}
+
 function handleFileSelect (evt) {
   evt.stopPropagation ();
   evt.preventDefault ();
@@ -563,6 +580,8 @@ function handleFileSelect (evt) {
         v11DownloadLink.innerHTML = getDownloadLinkHtml ();
 
         try {
+          accordion();
+
           const downloadV11 = document.getElementById ('downloadV11');
           downloadV11.addEventListener ('click', generateFiles, false);
 
