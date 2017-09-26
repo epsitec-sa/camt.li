@@ -36,6 +36,6 @@ var T = {
   type4: 'Type 4',
   withCrlf: 'Avec CRLF',
   withoutCrlf: 'Sans CRLF',
-  errorMessageTitle:'Ceci est le titre du message d erreur',
-  errorMessageContent:'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi commodo, ipsum sed pharetra gravida, orci magna rhoncus neque, id pulvinar odio lorem non turpis.',
+  errorMessageTitle:'Certains encaissements n\'ont pas pu être générés',
+  errorMessageContent:'Veuillez vous assurer que si vous générez du type 3, aucune transaction soit du euroSIC. Le cas écheant, veuillez générer du type 4.',
 };
