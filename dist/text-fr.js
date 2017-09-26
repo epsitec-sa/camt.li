@@ -34,4 +34,8 @@ var T = {
   debt: 'Debit',
   type3: 'Type 3',
   type4: 'Type 4',
+  withCrlf: 'Avec CRLF',
+  withoutCrlf: 'Sans CRLF',
+  errorMessageTitle:'Ceci est le titre du message d erreur',
+  errorMessageContent:'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi commodo, ipsum sed pharetra gravida, orci magna rhoncus neque, id pulvinar odio lorem non turpis.',
 };
