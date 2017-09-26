@@ -4,6 +4,8 @@ require ('babel-polyfill');
 var parseString = require ('xml2js').parseString;
 var escapeXml = require ('./utils.js').escapeXml;
 var splitLongLine = require ('./utils.js').splitLongLine;
+var readStorageValue = require ('./utils.js').readStorageValue;
+var writeStorageValue = require ('./utils.js').writeStorageValue;
 var _ = require ('./utils.js')._;
 var getDateTime = require ('./utils.js').getDateTime;
 var formatAmount = require ('./utils.js').formatAmount;
@@ -20,13 +22,12 @@ const camtXsds = {
 
 let v11Xmls = [];
 
-function readV11TypeCookie () {
-  if (typeof window.localStorage === 'undefined') {
-    console.log ('Local storage unsupported');
-    return '4';
-  }
+function readV11Type () {
+  return readStorageValue ('v11Type', '4');
+}
 
-  return window.localStorage.getItem ('camtli_v11Type') || '4';
+function writeV11Type (value) {
+  writeStorageValue ('v11Type', value);
 }
 
 function writeV11TypeCookie (v11Type) {
