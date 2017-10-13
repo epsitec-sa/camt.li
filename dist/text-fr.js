@@ -37,5 +37,5 @@ var T = {
   withCrlf: 'Avec CRLF',
   withoutCrlf: 'Sans CRLF',
   errorMessageTitle:'Certains encaissements n\'ont pas pu être générés',
-  errorMessageContent:'Veuillez vous assurer que si vous générez du type 3, aucune transaction soit du euroSIC. Le cas écheant, veuillez générer du type 4.',
+  errorMessageContent:'Un fichier de type 3 ne peut pas contenir de transactions euroSIC. Le cas écheant, veuillez générer du type 4.',
 };

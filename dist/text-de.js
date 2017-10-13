@@ -27,7 +27,7 @@ var T = {
   downloadV11: 'V11 Download',
   paymentMode: 'Zahlungsart',
   cdpt: 'Postbüro',
-  autt: 'Elektronische Transfer',
+  autt: 'Elektronischer Transfer',
   dmct: 'Zahlungsauftrag',
   atxn: 'EuroSIC',
   credit: 'Haben',
@@ -36,6 +36,6 @@ var T = {
   type4: 'Typ 4',
   withCrlf: 'Mit CRLF',
   withoutCrlf: 'Ohne CRLF',
-  errorMessageTitle:'Ceci est le titre du message d erreur',
-  errorMessageContent:'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi commodo, ipsum sed pharetra gravida, orci magna rhoncus neque, id pulvinar odio lorem non turpis.',
+  errorMessageTitle:'Einige Zahlungen konnten nicht erzeugt werden',
+  errorMessageContent:'Eine Typ 3 Datei kann keine euroSIC Transaktionen enthalten. Erzeugen Sie statt dessen eine Typ 4 Datei.',
 };
