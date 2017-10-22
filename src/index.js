@@ -97,7 +97,7 @@ function formatCredit (credit) {
       case 'CRDT':
         return T.credit;
       case 'DEBT':
-        return t.debt;
+        return T.debt;
     }
   }
 }
