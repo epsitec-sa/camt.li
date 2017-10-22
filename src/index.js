@@ -1,6 +1,7 @@
-'use strict';
+/* global require T */
 
 require ('babel-polyfill');
+
 var parseString = require ('xml2js').parseString;
 var escapeXml = require ('./utils.js').escapeXml;
 var splitLongLine = require ('./utils.js').splitLongLine;
