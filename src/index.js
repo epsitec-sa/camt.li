@@ -526,7 +526,7 @@ function getDownloadLinkHtml () {
     return `
       <div id="downloadV11Container">
         <div id="v11-type">
-          <button class="accordion">Paramètres</button>
+          <button class="accordion">${T.parameters}</button>
           <div class="panel">
             <form>
               <table>
