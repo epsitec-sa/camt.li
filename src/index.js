@@ -1,4 +1,5 @@
-/* global require T */
+/* global require T console document window setTimeout FileReader */
+/* eslint no-console: 0 */
 
 require ('babel-polyfill');
 
@@ -130,10 +131,10 @@ function getDetailsSummary (details, bvrsInfo) {
   );
   const debtorBank1 = escapeXml (debtorName) || '';
   const debtorBank2 = debtorAccount || '';
-  const debtorDetails = debtorBank1.length
-    ? debtorBank1 +
-        (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : '')
-    : debtorBank2.length ? formatIBAN (debtorBank2) : '-';
+  const debtorDetails = debtorBank1.length ?
+    debtorBank1 +
+        (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : '') :
+    debtorBank2.length ? formatIBAN (debtorBank2) : '-';
 
   if (credit === 'CRDT' && reference) {
     bvrsInfo.count = bvrsInfo.count + 1; // It is an ESR transaction
@@ -382,6 +383,7 @@ function getXmlReport (title, xml, callback) {
         } catch (ex) {
           callback (ex, `<h1 class="error">${T.undefinedFormat}</h1>`);
         } finally {
+          /* eslint no-unsafe-finally: 0 */
           return;
         }
       }
@@ -403,10 +405,10 @@ function scrollTo (to, duration) {
   const change = to - start;
   const increment = 20;
 
-  //t = current time
-  //b = start value
-  //c = change in value
-  //d = duration
+  // t = current time
+  // b = start value
+  // c = change in value
+  // d = duration
   function easeInOutQuad (t, b, c, d) {
     t = t / (d / 2);
     if (t < 1) {
@@ -458,12 +460,12 @@ function getDownloadLinkProperties (v11Files, callback) {
   return;
 }
 
-function showErrorBox() {
+function showErrorBox () {
   var messageBox = document.getElementById ('errorMessage');
   messageBox.style.display = 'inline';
 }
 
-function hideErrorBox() {
+function hideErrorBox () {
   var messageBox = document.getElementById ('errorMessage');
   messageBox.style.display = 'none';
 }
@@ -483,7 +485,7 @@ function generateFiles () {
     }
 
     return {
-      name: xml.name + '.v11',
+      name:    xml.name + '.v11',
       content: result.content,
     };
   });
@@ -501,12 +503,9 @@ function generateFiles () {
       document.body.appendChild (dlink);
       dlink.download = name;
       dlink.href = href;
-      dlink.onclick = function (e) {
+      dlink.onclick = function () {
         // revokeObjectURL needs a delay to work properly
-        var that = this;
-        setTimeout (function () {
-          window.URL.revokeObjectURL (that.href);
-        }, 1500);
+        setTimeout (() => window.URL.revokeObjectURL (this.href), 1500);
       };
 
       dlink.click ();
@@ -522,7 +521,7 @@ function getDownloadLinkHtml () {
   } else {
     var typeChoice = readV11Type ();
     var crLfChoice = readV11CrLf ();
-    console.log('crlf: ' + crLfChoice)
+    console.log ('crlf: ' + crLfChoice);
 
     return `
       <div id="downloadV11Container">
@@ -567,20 +566,20 @@ function getDownloadLinkHtml () {
   }
 }
 
-function accordion() {
-  var acc = document.getElementsByClassName("accordion");
+function accordion () {
+  var acc = document.getElementsByClassName('accordion');
   var i;
 
   for (i = 0; i < acc.length; i++) {
-    acc[i].onclick = function() {
-      this.classList.toggle("active");
+    acc[i].onclick = function () {
+      this.classList.toggle('active');
       var panel = this.nextElementSibling;
-      if (panel.style.maxHeight){
+      if (panel.style.maxHeight) {
         panel.style.maxHeight = null;
       } else {
-        panel.style.maxHeight = panel.scrollHeight + "px";
+        panel.style.maxHeight = panel.scrollHeight + 'px';
       }
-    }
+    };
   }
 }
 
@@ -613,7 +612,7 @@ function handleFileSelect (evt) {
 
         if (xml && xml !== '') {
           v11Xmls.push ({
-            name: file.name,
+            name:    file.name,
             content: xml,
           });
         }
@@ -644,8 +643,8 @@ function handleFileSelect (evt) {
               false
             );
           });
-        } catch (e) {
-          console.log (e);
+        } catch (ex) {
+          console.log (ex);
         }
       });
     };
