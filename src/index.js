@@ -30,12 +30,12 @@ function writeV11Type (value) {
   writeStorageValue ('v11Type', value);
 }
 
-function readV11Crlf () {
-  return readStorageValue ('v11Crlf', 'on');
+function readV11CrLf () {
+  return readStorageValue ('v11CrLf', 'on');
 }
 
-function writeV11Crlf (value) {
-  writeStorageValue ('v11Crlf', value);
+function writeV11CrLf (value) {
+  writeStorageValue ('v11CrLf', value);
 }
 
 function getCreationDateTime (header) {
@@ -471,7 +471,7 @@ function generateFiles () {
   hideErrorBox ();
 
   const type = readV11Type ();
-  const separator = readV11Crlf () === 'on' ? '\r\n' : '';
+  const separator = readV11CrLf () === 'on' ? '\r\n' : '';
   var errors = false;
 
   const v11Files = v11Xmls.map (xml => {
@@ -519,9 +519,9 @@ function getDownloadLinkHtml () {
   if (v11Xmls.length === 0) {
     return '';
   } else {
-    var typeChoise = readV11Type ();
-    var crlfChoise = readV11Crlf ();
-    console.log('crlf: ' + crlfChoise)
+    var typeChoice = readV11Type ();
+    var crLfChoice = readV11CrLf ();
+    console.log('crlf: ' + crLfChoice)
 
     return `
       <div id="downloadV11Container">
@@ -532,22 +532,22 @@ function getDownloadLinkHtml () {
               <table>
                 <tr>
                   <td class="typeButton" style="width: 20%;">
-                      <input type="radio" name="type" value="3" id="type-3" ${typeChoise === '3' ? 'checked' : ''}>
+                      <input type="radio" name="type" value="3" id="type-3" ${typeChoice === '3' ? 'checked' : ''}>
                       <label for="type-3">${T.type3}</label>
                   </td>
                   <td class="typeButton" style="width: 10%;">
-                      <input type="radio" name="type" value="4" id="type-4" ${typeChoise === '4' ? 'checked' : ''}>
+                      <input type="radio" name="type" value="4" id="type-4" ${typeChoice === '4' ? 'checked' : ''}>
                       <label for="type-4">${T.type4}</label>
                   </td>
                   <td style="width: 10%; border-right: 1px solid #ddd;"></td>
                   <td style="width: 10%;"></td>
                   <td class="typeButton" style="width: 10%;">
-                      <input type="radio" name="crlf" value="on" id="crlf-on" ${crlfChoise === 'on' ? 'checked' : ''}>
-                      <label for="crlf-on">${T.withCrlf}</label>
+                      <input type="radio" name="crlf" value="on" id="crlf-on" ${crLfChoice === 'on' ? 'checked' : ''}>
+                      <label for="crlf-on">${T.withCrLf}</label>
                   </td>
                   <td class="typeButton" style="width: 20%;">
-                      <input type="radio" name="crlf" value="off" id="crlf-off" ${crlfChoise === 'off' ? 'checked' : ''}>
-                      <label for="crlf-off">${T.withoutCrlf}</label>
+                      <input type="radio" name="crlf" value="off" id="crlf-off" ${crLfChoice === 'off' ? 'checked' : ''}>
+                      <label for="crlf-off">${T.withoutCrLf}</label>
                   </td>
                 </tr>
               </table>
@@ -626,20 +626,20 @@ function handleFileSelect (evt) {
           const downloadV11 = document.getElementById ('downloadV11');
           downloadV11.addEventListener ('click', generateFiles, false);
 
-          const typeChoises = document.getElementsByName ('type');
-          typeChoises.forEach (choise => {
-            choise.addEventListener (
+          const typeChoices = document.getElementsByName ('type');
+          typeChoices.forEach (choice => {
+            choice.addEventListener (
               'click',
-              () => writeV11Type (choise.value),
+              () => writeV11Type (choice.value),
               false
             );
           });
 
-          const crlfChoises = document.getElementsByName ('crlf');
-          crlfChoises.forEach (choise => {
-            choise.addEventListener (
+          const crLfChoices = document.getElementsByName ('crlf');
+          crLfChoices.forEach (choice => {
+            choice.addEventListener (
               'click',
-              () => writeV11Crlf (choise.value),
+              () => writeV11CrLf (choice.value),
               false
             );
           });
