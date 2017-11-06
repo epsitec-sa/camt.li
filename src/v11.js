@@ -159,6 +159,7 @@ function _generateTransactionTypeCodeV3 (transaction) {
     '01': '1',
     '02': '3',
     '03': '0',
+    '04': '0',
   };
   const typesConversionTable = {
     '1': '2',
