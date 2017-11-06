@@ -37,6 +37,8 @@ var T = {
   type4:               'Type 4',
   withCrLf:            'Avec CR+LF',
   withoutCrLf:         'Sans CR+LF',
-  errorMessageTitle:   'Certains encaissements n\'ont pas pu être générés',
-  errorMessageContent: 'Un fichier de type 3 ne peut pas contenir de transactions euroSIC. Le cas écheant, veuillez générer du type 4.',
+  errorMessageTitle:   'Certaines transactions n\'ont pas pu générer l\'encaissement correspondant',
+  errorMessageUnknown: 'Erreurs inconnues (regarder le log dévéloppeur pour plus d\'informations)',
+  errorMessageMissingBvrNumber: 'Certaines transactions ne contiennent pas de numéro d\'adhérent BVR',
+  errorMessageMissingRefs: 'Certaines transactions ne contiennent pas de type (compte propre, remboursement, etc..)',
 };
