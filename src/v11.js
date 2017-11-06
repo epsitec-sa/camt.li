@@ -423,17 +423,13 @@ function generateV11 (document, type, separator) {
 
     if (bLevel) {
       var transactions = _generateTransactions (bLevel);
-      var errors = [];
+
+      var errors = ld_ (transactions)
+        .filter (transaction => transaction.error)
+        .value ();
 
       var content = ld_ (transactions)
-        .filter (transaction => {
-          if (transaction.error) {
-            errors.push (transaction);
-            return false;
-          }
-
-          return true;
-        })
+        .filter (transaction => !transaction.error)
         .groupBy (transaction => transaction.clientBvrNumber)
         .map (
           group =>
