@@ -5,6 +5,9 @@ var padLeft = require ('./utils.js').padLeft;
 var padRight = require ('./utils.js').padRight;
 var ld_ = require ('lodash');
 
+// error codes: Unknown, MissingBvrNumber, MissingRefs
+
+
 const transactionCodesTable = {
   // camt.54, v11
   '01': '01',
@@ -211,7 +214,13 @@ function _generateTransactionObject (
   );
   const taxCurrency = _ (() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
 
-  if (isCredit && clientBvrNumber && bvrReferenceNumber) {
+  if (!clientBvrNumber) {
+    return {
+      error: 'MissingBvrNumber'
+    };
+  }
+
+  if (isCredit && bvrReferenceNumber) {
     return {
       transactionCode: transactionCode,
       bankTransactionCode: bankTransactionCode,
@@ -244,16 +253,22 @@ function _generateTransactions (bLevel) {
     for (var entryDetails of entry.NtryDtls || []) {
       for (var txDetails of entryDetails.TxDtls || []) {
         if (txDetails.Refs) {
-          var tx = _generateTransactionObject (
+           var tx = _generateTransactionObject (
             txDetails,
             clientBvrNumber,
             reversalIndicator,
             valutaDate,
             bookingDate
           );
+
           if (tx) {
             transactions.push (tx);
           }
+        }
+        else {
+          transactions.push ({
+            error: 'MissingRefs'
+          });
         }
       }
     }
@@ -261,6 +276,7 @@ function _generateTransactions (bLevel) {
 
   return transactions;
 }
+
 
 function _generateTotalRecordV3 (transactions) {
   const transaction = transactions[0];
@@ -374,6 +390,10 @@ function _translateToType4V11 (transaction) {
 }
 
 function _translateToV11 (transaction, type) {
+  if (transaction.error) { // faulted transaction
+    return transaction;
+  }
+
   try {
     switch (type) {
       case '3':
@@ -389,7 +409,9 @@ function _translateToV11 (transaction, type) {
     console.dir (transaction);
     console.dir (err);
 
-    return null;
+    return {
+      error: 'Unknown'
+    };
   }
 }
 
@@ -401,22 +423,22 @@ function generateV11 (document, type, separator) {
 
     if (bLevel) {
       var transactions = _generateTransactions (bLevel);
-      var errors = false;
+      var errors = [];
 
       var content = ld_ (transactions)
+        .filter (transaction => {
+          if (transaction.error) {
+            errors.push (transaction);
+            return false;
+          }
+
+          return true;
+        })
         .groupBy (transaction => transaction.clientBvrNumber)
         .map (
           group =>
             group
               .map (transaction => _translateToV11 (transaction, type))
-              .filter (line => {
-                if (line == undefined) {
-                  errors = true;
-                  return false;
-                }
-
-                return true;
-              })
               .join (separator) +
             separator +
             _generateTotalRecord (group, type)
