@@ -460,14 +460,20 @@ function getDownloadLinkProperties (v11Files, callback) {
   return;
 }
 
-function showErrorBox () {
-  var messageBox = document.getElementById ('errorMessage');
-  messageBox.style.display = 'inline';
+function showErrorBox (errors) {
+  document.getElementById ('errorMessage').style.display = 'inline';
+
+  for (var error of errors) {
+    document.getElementById ('message' + error.error).style.display = 'inline';
+  }
 }
 
 function hideErrorBox () {
-  var messageBox = document.getElementById ('errorMessage');
-  messageBox.style.display = 'none';
+  document.getElementById ('errorMessage').style.display = 'none';
+
+  document.getElementById ('messageUnknown').style.display = 'none';
+  document.getElementById ('messageMissingBvrNumber').style.display = 'none';
+  document.getElementById ('messageMissingRefs').style.display = 'none';
 }
 
 function generateFiles () {
@@ -475,14 +481,11 @@ function generateFiles () {
 
   const type = readV11Type ();
   const separator = readV11CrLf () === 'on' ? '\r\n' : '';
-  var errors = false;
+  var errors = null;
 
   const v11Files = v11Xmls.map (xml => {
     var result = generateV11 (xml.content, type, separator);
-
-    if (result.errors) {
-      errors = true;
-    }
+    errors = result.errors;
 
     return {
       name:    xml.name + '.v11',
@@ -490,8 +493,8 @@ function generateFiles () {
     };
   });
 
-  if (errors) {
-    showErrorBox ();
+  if (errors.length > 0) {
+    showErrorBox (errors);
   }
 
 
@@ -558,7 +561,9 @@ function getDownloadLinkHtml () {
         <div id="errorMessage">
           <div class="wrap">
             <h3 id="messageTitle" >${T.errorMessageTitle}</h3>
-            <p id="messageContent" >${T.errorMessageContent}</p>
+            <p id="messageUnknown" >${T.errorMessageUnknown}</p><br />
+            <p id="messageMissingBvrNumber" >${T.errorMessageMissingBvrNumber}</p><br />
+            <p id="messageMissingRefs" >${T.errorMessageMissingRefs}</p>
           </div>
         </div>
       </div>
