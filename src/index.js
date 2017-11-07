@@ -437,7 +437,7 @@ function scrollTo (to, duration) {
 function getDownloadLinkProperties (v11Files, callback) {
   if (v11Files.length === 1) {
     var blob = new Blob ([v11Files[0].content], {type: 'text/plain'});
-    callback (null, window.URL.createObjectURL (blob), v11Files[0].name);
+    callback (null, blob, v11Files[0].name);
   } else {
     var zip = new JSZip ();
 
@@ -447,7 +447,7 @@ function getDownloadLinkProperties (v11Files, callback) {
 
     zip.generateAsync ({type: 'base64'}).then (content => {
       var blob = base64toBlob (content);
-      callback (null, window.URL.createObjectURL (blob), 'files.zip');
+      callback (null, blob, 'files.zip');
     });
   }
 
@@ -491,23 +491,27 @@ function generateFiles () {
     showErrorBox (errors);
   }
 
-
-  getDownloadLinkProperties (v11Files, (err, href, name) => {
+  getDownloadLinkProperties (v11Files, (err, blob, name) => {
     if (err) {
       console.log (err);
     } else {
-      const dlink = document.createElement ('a');
-      document.body.appendChild (dlink);
-      dlink.download = name;
-      dlink.href = href;
-      dlink.onclick = function () {
-        // revokeObjectURL needs a delay to work properly
-        setTimeout (() => window.URL.revokeObjectURL (this.href), 1500);
-      };
+      if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob (blob, name);
+      } else {
+        const href = window.URL.createObjectURL (blob);
+        const dlink = document.createElement ('a');
+        document.body.appendChild (dlink);
+        dlink.download = name;
+        dlink.href = href;
+        dlink.onclick = function () {
+          // revokeObjectURL needs a delay to work properly
+          setTimeout (() => window.URL.revokeObjectURL (this.href), 1500);
+        };
 
-      dlink.click ();
-      document.body.removeChild (dlink);
-      dlink.remove ();
+        dlink.click ();
+        document.body.removeChild (dlink);
+        dlink.remove ();
+      }
     }
   });
 }
