@@ -37,8 +37,8 @@ var T = {
   type4:                        'Typ 4',
   withCrLf:                     'Mit CR+LF',
   withoutCrLf:                  'Ohne CR+LF',
-  errorMessageTitle:            'Transaktionen konnten keine Einzahlungen erzeugen. Grund:',
-  errorMessageUnknown:          'Fehler (mehr dazu im Browser Log)',
-  errorMessageMissingBvrNumber: 'Keine ESR Teilnehmernummer konnte gefunden werden',
-  errorMessageMissingRefs:      'Die Transaktion enthält keinen gültigen Typ (z.B. Zahlung auf eigenes Konto, Rückerstattung, usw.)',
+  errorMessageTitle:            'Einige Transaktionen konntent nicht umgewandelt werden weil die camt-Datei nicht konform istGrund:',
+  errorMessageUnknown:          'Fehler (mehr dazu im Entwickler Console der Browsers)',
+  errorMessageMissingBvrNumber: 'Einige Transaktionen enthalten keine ESR Teilnehmernummer',
+  errorMessageMissingRefs:      'Einige Transaktionen enthalten keinen gültigen Typ (z.B. Zahlung auf eigenes Konto, Rückerstattung, usw.)',
 };
