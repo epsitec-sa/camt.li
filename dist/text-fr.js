@@ -37,7 +37,7 @@ var T = {
   type4:                        'Type 4',
   withCrLf:                     'Avec CR+LF',
   withoutCrLf:                  'Sans CR+LF',
-  errorMessageTitle:            'Certaines transactions n\'ont pas pu générer d\'encaissement correspondant',
+  errorMessageTitle:            'Certaines transactions n\'ont pas pu être converties car le fichier n\'est pas conforme',
   errorMessageUnknown:          'Erreurs inconnues (regarder le log dévéloppeur pour plus d\'informations)',
   errorMessageMissingBvrNumber: 'Certaines transactions ne contiennent pas de numéro d\'adhérent BVR',
   errorMessageMissingRefs:      'Certaines transactions ne contiennent pas de type (propre compte, remboursement, etc.)',
