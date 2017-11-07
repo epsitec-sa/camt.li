@@ -119,6 +119,7 @@ function readStorageValue (name, defaultValue) {
 function writeStorageValue (name, value) {
   if (typeof window.localStorage === 'undefined') {
     console.log ('Local storage unsupported');
+    return;
   }
 
   window.localStorage.setItem ('camtli_' + name, value);

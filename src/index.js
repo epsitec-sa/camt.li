@@ -625,7 +625,8 @@ function handleFileSelect (evt) {
           const downloadV11 = document.getElementById ('downloadV11');
           downloadV11.addEventListener ('click', generateFiles, false);
 
-          const typeChoices = document.getElementsByName ('type');
+          const typeChoices = Array.from (document.getElementsByName ('type'));
+
           typeChoices.forEach (choice => {
             choice.addEventListener (
               'click',
@@ -634,7 +635,7 @@ function handleFileSelect (evt) {
             );
           });
 
-          const crLfChoices = document.getElementsByName ('crlf');
+          const crLfChoices = Array.from (document.getElementsByName ('crlf'));
           crLfChoices.forEach (choice => {
             choice.addEventListener (
               'click',
