@@ -475,11 +475,11 @@ function generateFiles () {
 
   const type = readV11Type ();
   const separator = readV11CrLf () === 'on' ? '\r\n' : '';
-  var errors = null;
+  var errors = [];
 
   const v11Files = v11Xmls.map (xml => {
     var result = generateV11 (xml.content, type, separator);
-    errors = result.errors;
+    errors = errors.concat (result.errors);
 
     return {
       name:    xml.name + '.v11',
