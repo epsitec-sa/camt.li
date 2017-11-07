@@ -11,6 +11,7 @@ var writeStorageValue = require ('./utils.js').writeStorageValue;
 var _ = require ('./utils.js')._;
 var getDateTime = require ('./utils.js').getDateTime;
 var formatAmount = require ('./utils.js').formatAmount;
+var base64toBlob = require ('./utils.js').base64toBlob;
 var getDate = require ('./utils.js').getDate;
 var generateV11 = require ('./v11.js').generateV11;
 var JSZip = require ('jszip');
@@ -433,14 +434,10 @@ function scrollTo (to, duration) {
 }
 
 /******************************************************************************/
-
 function getDownloadLinkProperties (v11Files, callback) {
   if (v11Files.length === 1) {
-    callback (
-      null,
-      `data:text/plain;charset=utf-8,${encodeURIComponent (v11Files[0].content)}`,
-      v11Files[0].name
-    );
+    var blob = new Blob ([v11Files[0].content], {type: 'text/plain'});
+    callback (null, window.URL.createObjectURL (blob), v11Files[0].name);
   } else {
     var zip = new JSZip ();
 
@@ -449,11 +446,8 @@ function getDownloadLinkProperties (v11Files, callback) {
     }
 
     zip.generateAsync ({type: 'base64'}).then (content => {
-      callback (
-        null,
-        `data:application/octet-stream;base64,${content}`,
-        'files.zip'
-      );
+      var blob = base64toBlob (content);
+      callback (null, window.URL.createObjectURL (blob), 'files.zip');
     });
   }
 

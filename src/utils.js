@@ -92,6 +92,21 @@ function getDate (xml) {
   }
 }
 
+function base64toBlob (data) {
+  var byteString = atob (data);
+
+  // write the bytes of the string to an ArrayBuffer
+  var ab = new ArrayBuffer (byteString.length);
+  var ia = new Uint8Array (ab);
+  for (var i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt (i);
+  }
+
+  // write the ArrayBuffer to a blob, and you're done
+  var bb = new Blob ([ab], {type: 'application/octet-stream'});
+  return bb;
+}
+
 function readStorageValue (name, defaultValue) {
   if (typeof window.localStorage === 'undefined') {
     console.log ('Local storage unsupported');
@@ -109,8 +124,8 @@ function writeStorageValue (name, value) {
   window.localStorage.setItem ('camtli_' + name, value);
 }
 
-
 module.exports.escapeXml = escapeXml;
+module.exports.base64toBlob = base64toBlob;
 module.exports.splitLongLine = splitLongLine;
 module.exports._ = _;
 
