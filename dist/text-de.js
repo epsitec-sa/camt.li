@@ -37,7 +37,7 @@ var T = {
   type4:                        'Typ 4',
   withCrLf:                     'Mit CR+LF',
   withoutCrLf:                  'Ohne CR+LF',
-  errorMessageTitle:            'Eine oder mehrere Transaktionen wurden nicht konvertiert; die camt-Datei ist nicht konform:',
+  errorMessageTitle:            'Eine oder mehrere Transaktionen wurden nicht konvertiert; es fehlen Informationen',
   errorMessageUnknown:          'Unerwarteter Fehler (mehr dazu im Logfenster des Browsers)',
   errorMessageMissingBvrNumber: 'Fehlende ESR Teilnehmernummer',
   errorMessageMissingRefs:      'Fehlender Zahlungstyp (z.B. Zahlung auf eigenes Konto, Rückerstattung, usw.)',

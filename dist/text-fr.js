@@ -37,7 +37,7 @@ var T = {
   type4:                        'Type 4',
   withCrLf:                     'Avec CR+LF',
   withoutCrLf:                  'Sans CR+LF',
-  errorMessageTitle:            'Certaines transactions n\'ont pas pu être converties; le fichier camt n\'est pas conforme:',
+  errorMessageTitle:            'Certaines transactions n\'ont pas pu être converties; des informations sont manquantes',
   errorMessageUnknown:          'Erreur inattendue (détails dans la fenêtre de log du navigateur)',
   errorMessageMissingBvrNumber: 'Numéro d\'adhérent BVR manquant.',
   errorMessageMissingRefs:      'Type de paiement absent (par ex. propre compte, remboursement, etc.)',
