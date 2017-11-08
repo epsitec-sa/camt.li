@@ -3,3 +3,5 @@ upload-ftp.bat
 samples/
 lib/*.js
 dist/index.js
+.vscode/
+package-lock.json
