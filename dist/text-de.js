@@ -30,6 +30,8 @@ var T = {
   autt:                         'Elektronischer Transfer',
   dmct:                         'Zahlungsauftrag',
   atxn:                         'EuroSIC',
+  vcom:                         'Ohne Herkunft',
+  cajt:                         'Rückleitung',
   credit:                       'Haben',
   debt:                         'Soll',
   parameters:                   'Parameter',

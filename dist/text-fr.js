@@ -30,6 +30,8 @@ var T = {
   autt:                         'Transfert électronique',
   dmct:                         'Ordre de paiement',
   atxn:                         'EuroSIC',
+  vcom:                         'Sans origine',
+  cajt:                         'Retour',
   credit:                       'Crédit',
   debt:                         'Débit',
   parameters:                   'Paramètres',
