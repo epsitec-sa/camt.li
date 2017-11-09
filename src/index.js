@@ -136,10 +136,10 @@ function getDetailsSummary (details, bvrsInfo) {
   );
   const debtorBank1 = escapeXml (debtorName) || '';
   const debtorBank2 = debtorAccount || '';
-  const debtorDetails = debtorBank1.length ?
-    debtorBank1 +
-        (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : '') :
-    debtorBank2.length ? formatIBAN (debtorBank2) : '-';
+  const debtorDetails = debtorBank1.length
+    ? debtorBank1 +
+        (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : '')
+    : debtorBank2.length ? formatIBAN (debtorBank2) : '-';
 
   if (reference) {
     bvrsInfo.count = bvrsInfo.count + 1; // It is an ESR transaction
@@ -486,7 +486,7 @@ function generateFiles () {
     errors = errors.concat (result.errors);
 
     return {
-      name:    xml.name + '.v11',
+      name: xml.name + '.v11',
       content: result.content,
     };
   });
@@ -574,12 +574,12 @@ function getDownloadLinkHtml () {
 }
 
 function accordion () {
-  var acc = document.getElementsByClassName('accordion');
+  var acc = document.getElementsByClassName ('accordion');
   var i;
 
   for (i = 0; i < acc.length; i++) {
     acc[i].onclick = function () {
-      this.classList.toggle('active');
+      this.classList.toggle ('active');
       var panel = this.nextElementSibling;
       if (panel.style.maxHeight) {
         panel.style.maxHeight = null;
@@ -619,7 +619,7 @@ function handleFileSelect (evt) {
 
         if (xml && xml !== '') {
           v11Xmls.push ({
-            name:    file.name,
+            name: file.name,
             content: xml,
           });
         }
@@ -628,7 +628,7 @@ function handleFileSelect (evt) {
         v11DownloadLink.innerHTML = getDownloadLinkHtml ();
 
         try {
-          accordion();
+          accordion ();
 
           const downloadV11 = document.getElementById ('downloadV11');
           downloadV11.addEventListener ('click', generateFiles, false);

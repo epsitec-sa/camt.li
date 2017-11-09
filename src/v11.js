@@ -7,7 +7,6 @@ var ld_ = require ('lodash');
 
 // error codes: Unknown, MissingBvrNumber, MissingRefs
 
-
 const transactionCodesTable = {
   // camt.54, v11
   '01': '01',
@@ -233,7 +232,7 @@ function _generateTransactionObject (
 
   if (!clientBvrNumber) {
     return {
-      error: 'MissingBvrNumber'
+      error: 'MissingBvrNumber',
     };
   }
 
@@ -270,7 +269,7 @@ function _generateTransactions (bLevel) {
     for (var entryDetails of entry.NtryDtls || []) {
       for (var txDetails of entryDetails.TxDtls || []) {
         if (txDetails.Refs) {
-           var tx = _generateTransactionObject (
+          var tx = _generateTransactionObject (
             txDetails,
             clientBvrNumber,
             reversalIndicator,
@@ -281,10 +280,9 @@ function _generateTransactions (bLevel) {
           if (tx) {
             transactions.push (tx);
           }
-        }
-        else {
+        } else {
           transactions.push ({
-            error: 'MissingRefs'
+            error: 'MissingRefs',
           });
         }
       }
@@ -293,7 +291,6 @@ function _generateTransactions (bLevel) {
 
   return transactions;
 }
-
 
 function _generateTotalRecordV3 (transactions) {
   const transaction = transactions[0];
@@ -407,7 +404,8 @@ function _translateToType4V11 (transaction) {
 }
 
 function _translateToV11 (transaction, type) {
-  if (transaction.error) { // faulted transaction
+  if (transaction.error) {
+    // faulted transaction
     return transaction;
   }
 
@@ -420,14 +418,13 @@ function _translateToV11 (transaction, type) {
       default:
         return _translateToType4V11 (transaction);
     }
-  }
-  catch (err) {
+  } catch (err) {
     console.error ('error generating v11 for transaction:');
     console.dir (transaction);
     console.dir (err);
 
     return {
-      error: 'Unknown'
+      error: 'Unknown',
     };
   }
 }
@@ -463,7 +460,7 @@ function generateV11 (document, type, separator) {
 
       return {
         content: content,
-        errors: errors
+        errors: errors,
       };
     }
   }
