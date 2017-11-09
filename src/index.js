@@ -101,7 +101,7 @@ function formatCredit (credit) {
     switch (credit) {
       case 'CRDT':
         return T.credit;
-      case 'DEBT':
+      case 'DBIT':
         return T.debt;
     }
   }
