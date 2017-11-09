@@ -151,6 +151,23 @@ function _generateTransactionTypeCodeV4 (
   return '1'; // Normal transaction
 }
 
+function _isPositive (transaction) {
+  switch (_generateTransactionTypeCodeV4 (
+    transaction.transactionCode,
+    transaction.isCredit,
+    transaction.reversalIndicator
+  )) {
+    case '1':
+      return true;
+    case '2':
+      return false;
+    case '3':
+      return true;
+    default:
+      return true;
+  }
+}
+
 function _generateTransactionTypeCodeV3 (transaction) {
   const codeConversionTable = {
     '0': '0',
@@ -430,7 +447,10 @@ function generateV11 (document, type, separator) {
 
       var content = ld_ (transactions)
         .filter (transaction => !transaction.error)
-        .groupBy (transaction => transaction.clientBvrNumber)
+        .groupBy (
+          transaction =>
+            transaction.clientBvrNumber + _isPositive (transaction).toString ()
+        )
         .map (
           group =>
             group
