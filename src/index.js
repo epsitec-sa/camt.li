@@ -141,7 +141,7 @@ function getDetailsSummary (details, bvrsInfo) {
         (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : '') :
     debtorBank2.length ? formatIBAN (debtorBank2) : '-';
 
-  if (credit === 'CRDT' && reference) {
+  if (reference) {
     bvrsInfo.count = bvrsInfo.count + 1; // It is an ESR transaction
   }
 

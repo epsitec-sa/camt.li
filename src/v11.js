@@ -220,7 +220,7 @@ function _generateTransactionObject (
     };
   }
 
-  if (isCredit && bvrReferenceNumber) {
+  if (bvrReferenceNumber) {
     return {
       transactionCode: transactionCode,
       bankTransactionCode: bankTransactionCode,
