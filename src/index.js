@@ -537,8 +537,12 @@ function getDownloadLinkHtml () {
               <table>
                 <tr>
                   <td class="typeButton" style="width: 20%;">
-                      <input type="radio" name="type" value="3" id="type-3" ${typeChoice === '3' ? 'checked' : ''}>
-                      <label for="type-3">${T.type3}</label>
+                      <input type="radio" name="type" value="3-100" id="type-3-100" ${typeChoice === '3-100' ? 'checked' : ''}>
+                      <label for="type-3-100">${T.type3} / 100</label>
+                  </td>
+                  <td class="typeButton" style="width: 20%;">
+                      <input type="radio" name="type" value="3-128" id="type-3-128" ${typeChoice === '3-128' ? 'checked' : ''}>
+                      <label for="type-3-128">${T.type3} / 128</label>
                   </td>
                   <td class="typeButton" style="width: 10%;">
                       <input type="radio" name="type" value="4" id="type-4" ${typeChoice === '4' ? 'checked' : ''}>

@@ -292,7 +292,11 @@ function _generateTransactions (bLevel) {
   return transactions;
 }
 
-function _generateTotalRecordV3 (transactions) {
+function _generateTotalRecordV3 (transactions, length) {
+  function _remainingSpaces () {
+    return length === 128 ? _padRightSpaces ('', 28) : '';
+  }
+
   const transaction = transactions[0];
   const type = _generateTransactionTypeCodeV3 (transaction).substr (2);
 
@@ -311,7 +315,8 @@ function _generateTotalRecordV3 (transactions) {
       9
     ) +
     _padLeftZeroes ('', 9) +
-    _padRightSpaces ('', 13)
+    _padRightSpaces ('', 13) +
+    _remainingSpaces ()
   );
 }
 
@@ -350,8 +355,10 @@ function _generateTotalRecordV4 (transactions) {
 
 function _generateTotalRecord (transactions, type) {
   switch (type) {
-    case '3':
-      return _generateTotalRecordV3 (transactions);
+    case '3-100':
+      return _generateTotalRecordV3 (transactions, 100);
+    case '3-128':
+      return _generateTotalRecordV3 (transactions, 128);
     case '4':
       return _generateTotalRecordV4 (transactions);
     default:
@@ -359,7 +366,11 @@ function _generateTotalRecord (transactions, type) {
   }
 }
 
-function _translateToType3V11 (transaction) {
+function _translateToType3V11 (transaction, length) {
+  function _remainingSpaces () {
+    return length === 128 ? _padRightSpaces ('', 28) : '';
+  }
+
   return (
     _padLeftZeroes (_generateTransactionTypeCodeV3 (transaction), 3) +
     _padLeftZeroes (transaction.clientBvrNumber, 9) +
@@ -372,7 +383,8 @@ function _translateToType3V11 (transaction) {
     _padLeftZeroes ('', 9) + // N° microfilm
     '0' + // rejection code
     _padLeftZeroes ('', 9) +
-    _padWithoutDot (transaction.taxAmount, 4)
+    _padWithoutDot (transaction.taxAmount, 4) +
+    _remainingSpaces ()
   );
 }
 
@@ -411,8 +423,10 @@ function _translateToV11 (transaction, type) {
 
   try {
     switch (type) {
-      case '3':
-        return _translateToType3V11 (transaction);
+      case '3-100':
+        return _translateToType3V11 (transaction, 100);
+      case '3-128':
+        return _translateToType3V11 (transaction, 128);
       case '4':
         return _translateToType4V11 (transaction);
       default:
