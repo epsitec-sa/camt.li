@@ -167,6 +167,15 @@ function _isPositive (transaction) {
   }
 }
 
+function _totalAmount (transactions, amountFunc) {
+  ld_ (transactions)
+    .map (transaction => {
+      const sign = _isPositive (transaction) ? 1 : -1;
+      return sign * amountFunc (transaction);
+    })
+    .sum ();
+}
+
 function _generateTransactionTypeCodeV3 (transaction) {
   const codeConversionTable = {
     '0': '0',
@@ -297,23 +306,21 @@ function _generateTotalRecordV3 (transactions, length) {
     return length === 128 ? _padRightSpaces ('', 28) : '';
   }
 
-  const transaction = transactions[0];
-  const type = _generateTransactionTypeCodeV3 (transaction).substr (2);
+  const totalAmount = _totalAmount (transactions, trans => trans.amount || 0.0);
+  const totalTaxAmount = _totalAmount (
+    transactions,
+    trans => trans.taxAmount || 0.0
+  );
+  const type = totalAmount >= 0.0 ? '999' : '995';
 
   return (
-    _padLeftZeroes (type === '2' || type === '8' ? '999' : '995', 3) +
+    _padLeftZeroes (type, 3) +
     _padLeftZeroes (transaction.clientBvrNumber, 9) +
     '999999999999999999999999999' + // Clé de tri
-    _padWithoutDot (
-      ld_ (transactions).map (trans => trans.amount || 0.0).sum (),
-      12
-    ) +
+    _padWithoutDot (totalAmount, 12) +
     _padLeftZeroes (transactions.length, 12) +
     _formatDateV3 (transaction.submissionDate) +
-    _padWithoutDot (
-      ld_ (transactions).map (trans => trans.taxAmount || 0.0).sum (),
-      9
-    ) +
+    _padWithoutDot (totalTaxAmount, 9) +
     _padLeftZeroes ('', 9) +
     _padRightSpaces ('', 13) +
     _remainingSpaces ()
@@ -321,34 +328,26 @@ function _generateTotalRecordV3 (transactions, length) {
 }
 
 function _generateTotalRecordV4 (transactions) {
-  const transaction = transactions[0];
-  const code = _generateTransactionTypeCodeV4 (
-    transaction.transactionCode,
-    transaction.isCredit,
-    transaction.reversalIndicator
-  ) === '2'
-    ? '2'
-    : '1';
+  const totalAmount = _totalAmount (transactions, trans => trans.amount || 0.0);
+  const totalTaxAmount = _totalAmount (
+    transactions,
+    trans => trans.taxAmount || 0.0
+  );
+  const type = totalAmount >= 0.0 ? '1' : '2';
 
   return (
     _padLeftZeroes (transaction.currency === 'CHF' ? '99' : '98', 2) +
-    code +
+    type +
     '99' +
     '1' +
     _padLeftZeroes (transaction.clientBvrNumber, 9) +
     '999999999999999999999999999' + // Clé de tri
     _padRightSpaces (transaction.currency, 3) +
-    _padWithoutDot (
-      ld_ (transactions).map (trans => trans.amount || 0.0).sum (),
-      12
-    ) +
+    _padWithoutDot (totalAmount, 12) +
     _padLeftZeroes (transactions.length, 12) +
     _formatDateV4 (transaction.submissionDate) +
     _padRightSpaces (transaction.taxCurrency || transaction.currency, 3) +
-    _padWithoutDot (
-      ld_ (transactions).map (trans => trans.taxAmount || 0.0).sum (),
-      11
-    ) +
+    _padWithoutDot (totalTaxAmount, 11) +
     _padRightSpaces ('', 109)
   );
 }
@@ -458,10 +457,7 @@ function generateV11 (document, type, separator) {
 
       var content = ld_ (transactions)
         .filter (transaction => !transaction.error)
-        .groupBy (
-          transaction =>
-            transaction.clientBvrNumber + _isPositive (transaction).toString ()
-        )
+        .groupBy (transaction => transaction.clientBvrNumber)
         .map (
           group =>
             group
