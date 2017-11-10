@@ -440,7 +440,7 @@ function scrollTo (to, duration) {
 /******************************************************************************/
 function getDownloadLinkProperties (v11Files, callback) {
   if (v11Files.length === 1) {
-    var blob = new Blob ([ v11Files[0].content ], {type: 'text/plain'});
+    var blob = new Blob ([v11Files[0].content], {type: 'text/plain'});
     callback (null, blob, v11Files[0].name);
   } else {
     var zip = new JSZip ();
