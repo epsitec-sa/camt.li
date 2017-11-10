@@ -260,6 +260,7 @@ input[type=radio]:checked + label {
   background-color: #005187;
   align-items: center;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 #downloadV11::before {
@@ -346,6 +347,7 @@ ___________________________________*/
 .typeButton {
   height: 100px;
   vertical-align: middle;
+  white-space: nowrap;
 }
 
 button.accordion {
