@@ -168,7 +168,7 @@ function _isPositive (transaction) {
 }
 
 function _totalAmount (transactions, amountFunc) {
-  ld_ (transactions)
+  return ld_ (transactions)
     .map (transaction => {
       const sign = _isPositive (transaction) ? 1 : -1;
       return sign * amountFunc (transaction);
@@ -312,6 +312,7 @@ function _generateTotalRecordV3 (transactions, length) {
     trans => trans.taxAmount || 0.0
   );
   const type = totalAmount >= 0.0 ? '999' : '995';
+  const transaction = transactions[0];
 
   return (
     _padLeftZeroes (type, 3) +
@@ -319,7 +320,7 @@ function _generateTotalRecordV3 (transactions, length) {
     '999999999999999999999999999' + // Clé de tri
     _padWithoutDot (totalAmount, 12) +
     _padLeftZeroes (transactions.length, 12) +
-    _formatDateV3 (transaction.submissionDate) +
+    _formatDateV3 (Date.now ()) +
     _padWithoutDot (totalTaxAmount, 9) +
     _padLeftZeroes ('', 9) +
     _padRightSpaces ('', 13) +
@@ -334,6 +335,7 @@ function _generateTotalRecordV4 (transactions) {
     trans => trans.taxAmount || 0.0
   );
   const type = totalAmount >= 0.0 ? '1' : '2';
+  const transaction = transactions[0];
 
   return (
     _padLeftZeroes (transaction.currency === 'CHF' ? '99' : '98', 2) +
@@ -345,8 +347,8 @@ function _generateTotalRecordV4 (transactions) {
     _padRightSpaces (transaction.currency, 3) +
     _padWithoutDot (totalAmount, 12) +
     _padLeftZeroes (transactions.length, 12) +
-    _formatDateV4 (transaction.submissionDate) +
-    _padRightSpaces (transaction.taxCurrency || transaction.currency, 3) +
+    _formatDateV4 (Date.now ()) +
+    _padRightSpaces ('CHF', 3) + // taxes currency always in CHF
     _padWithoutDot (totalTaxAmount, 11) +
     _padRightSpaces ('', 109)
   );
