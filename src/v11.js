@@ -453,7 +453,7 @@ function generateV11 (document, type, separator) {
 
       if (errors.length > 0) {
         errors = errors.concat ({
-          error: 'TitleErrors',
+          error: 'TitleMissingInformation',
         });
       }
 

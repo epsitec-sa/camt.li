@@ -470,11 +470,11 @@ function showErrorBox (errors) {
 function hideErrorBox () {
   document.getElementById ('errorMessage').style.display = 'none';
 
-  document.getElementById ('messageTitleErrors').style.display = 'none';
-  document.getElementById ('messageTitleNoGenerated').style.display = 'none';
+  document.getElementById ('messageTitleMissingInformation').style.display =
+    'none';
+  document.getElementById ('messageTitleNoBvrs').style.display = 'none';
 
   document.getElementById ('messageUnknown').style.display = 'none';
-  document.getElementById ('messageMissingBvrNumber').style.display = 'none';
   document.getElementById ('messageMissingRefs').style.display = 'none';
 }
 
@@ -528,7 +528,7 @@ function generateFiles () {
   } else {
     showErrorBox ([
       {
-        error: 'TitleNoGenerated',
+        error: 'TitleNoBvrs',
       },
     ]);
   }
@@ -580,8 +580,8 @@ function getDownloadLinkHtml () {
         <div id="downloadV11Wrapper"><div id="downloadV11">${T.downloadV11}</div></div>
         <div id="errorMessage">
           <div class="wrap">
-            <h3 id="messageTitleErrors" >${T.errorMessageTitleErrors}</h3>
-            <h3 id="messageTitleNoGenerated" >${T.errorMessageTitleNoGenerated}</h3>
+            <h3 id="messageTitleMissingInformation" >${T.errorMessageTitleMissingInformation}</h3>
+            <h3 id="messageTitleNoBvrs" >${T.errorMessageTitleNoBvrs}</h3>
             <p id="messageUnknown" >${T.errorMessageUnknown}</p><br />
             <p id="messageMissingRefs" >${T.errorMessageMissingRefs}</p>
           </div>
