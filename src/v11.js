@@ -451,6 +451,12 @@ function generateV11 (document, type, separator) {
         .filter (transaction => transaction.error)
         .value ();
 
+      if (errors.length > 0) {
+        errors = errors.concat ({
+          error: 'TitleErrors',
+        });
+      }
+
       var content = ld_ (transactions)
         .filter (transaction => !transaction.error)
         .groupBy (transaction => transaction.clientBvrNumber)

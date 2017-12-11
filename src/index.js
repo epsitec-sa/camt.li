@@ -470,6 +470,9 @@ function showErrorBox (errors) {
 function hideErrorBox () {
   document.getElementById ('errorMessage').style.display = 'none';
 
+  document.getElementById ('messageTitleErrors').style.display = 'none';
+  document.getElementById ('messageTitleNoGenerated').style.display = 'none';
+
   document.getElementById ('messageUnknown').style.display = 'none';
   document.getElementById ('messageMissingBvrNumber').style.display = 'none';
   document.getElementById ('messageMissingRefs').style.display = 'none';
@@ -482,43 +485,53 @@ function generateFiles () {
   const separator = readV11CrLf () === 'on' ? '\r\n' : '';
   var errors = [];
 
-  const v11Files = v11Xmls.map (xml => {
-    var result = generateV11 (xml.content, type, separator);
-    errors = errors.concat (result.errors);
+  const v11Files = v11Xmls
+    .map (xml => {
+      var result = generateV11 (xml.content, type, separator);
+      errors = errors.concat (result.errors);
 
-    return {
-      name: xml.name + '.v11',
-      content: result.content,
-    };
-  });
+      return {
+        name: xml.name + '.v11',
+        content: result.content,
+      };
+    })
+    .filter (file => file.content !== '');
 
   if (errors.length > 0) {
     showErrorBox (errors);
   }
 
-  getDownloadLinkProperties (v11Files, (err, blob, name) => {
-    if (err) {
-      console.log (err);
-    } else {
-      if (window.navigator.msSaveBlob) {
-        window.navigator.msSaveBlob (blob, name);
+  if (v11Files.length >= 1) {
+    getDownloadLinkProperties (v11Files, (err, blob, name) => {
+      if (err) {
+        console.log (err);
       } else {
-        const href = window.URL.createObjectURL (blob);
-        const dlink = document.createElement ('a');
-        document.body.appendChild (dlink);
-        dlink.download = name;
-        dlink.href = href;
-        dlink.onclick = function () {
-          // revokeObjectURL needs a delay to work properly
-          setTimeout (() => window.URL.revokeObjectURL (this.href), 1500);
-        };
+        if (window.navigator.msSaveBlob) {
+          window.navigator.msSaveBlob (blob, name);
+        } else {
+          const href = window.URL.createObjectURL (blob);
+          const dlink = document.createElement ('a');
+          document.body.appendChild (dlink);
+          dlink.download = name;
+          dlink.href = href;
+          dlink.onclick = function () {
+            // revokeObjectURL needs a delay to work properly
+            setTimeout (() => window.URL.revokeObjectURL (this.href), 1500);
+          };
 
-        dlink.click ();
-        document.body.removeChild (dlink);
-        dlink.remove ();
+          dlink.click ();
+          document.body.removeChild (dlink);
+          dlink.remove ();
+        }
       }
-    }
-  });
+    });
+  } else {
+    showErrorBox ([
+      {
+        error: 'TitleNoGenerated',
+      },
+    ]);
+  }
 }
 
 function getDownloadLinkHtml () {
@@ -567,9 +580,9 @@ function getDownloadLinkHtml () {
         <div id="downloadV11Wrapper"><div id="downloadV11">${T.downloadV11}</div></div>
         <div id="errorMessage">
           <div class="wrap">
-            <h3 id="messageTitle" >${T.errorMessageTitle}</h3>
+            <h3 id="messageTitleErrors" >${T.errorMessageTitleErrors}</h3>
+            <h3 id="messageTitleNoGenerated" >${T.errorMessageTitleNoGenerated}</h3>
             <p id="messageUnknown" >${T.errorMessageUnknown}</p><br />
-            <p id="messageMissingBvrNumber" >${T.errorMessageMissingBvrNumber}</p><br />
             <p id="messageMissingRefs" >${T.errorMessageMissingRefs}</p>
           </div>
         </div>
