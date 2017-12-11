@@ -39,8 +39,8 @@ var T = {
   type4: 'Typ 4',
   withCrLf: 'Mit CR+LF',
   withoutCrLf: 'Ohne CR+LF',
-  errorMessageTitleErrors: 'Eine oder mehrere Transaktionen wurden nicht konvertiert; es fehlen Informationen',
-  errorMessageTitleNoGenerated: 'Aucun fichier ne contient des encaissemnts',
+  errorMessageTitleMissingInformation: 'Eine oder mehrere Transaktionen wurden nicht konvertiert; es fehlen Informationen',
+  errorMessageTitleNoBvrs: 'Die übermittelte(n) Datei(en) enthalten keine Einzahlungen',
   errorMessageUnknown: 'Unerwarteter Fehler (mehr dazu im Logfenster des Browsers)',
   errorMessageMissingRefs: 'Fehlender Zahlungstyp (z.B. Zahlung auf eigenes Konto, Rückerstattung, usw.)',
 };

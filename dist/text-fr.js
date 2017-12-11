@@ -39,8 +39,8 @@ var T = {
   type4: 'Type 4',
   withCrLf: 'Avec CR+LF',
   withoutCrLf: 'Sans CR+LF',
-  errorMessageTitleErrors: "Certaines transactions n'ont pas pu être converties; des informations sont manquantes",
-  errorMessageTitleNoGenerated: 'Aucun fichier ne contient des encaissements',
+  errorMessageTitleMissingInformation: "Certaines transactions n'ont pas pu être converties; des informations sont manquantes",
+  errorMessageTitleNoBvrs: 'Le ou les fichiers transmis ne contiennent aucun encaissement',
   errorMessageUnknown: 'Erreur inattendue (détails dans la fenêtre de log du navigateur)',
   errorMessageMissingRefs: 'Type de paiement absent (par ex. propre compte, remboursement, etc.)',
 };
