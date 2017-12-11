@@ -5,7 +5,7 @@ var padLeft = require ('./utils.js').padLeft;
 var padRight = require ('./utils.js').padRight;
 var ld_ = require ('lodash');
 
-// error codes: Unknown, MissingBvrNumber, MissingRefs
+// error codes: Unknown, MissingRefs
 
 const transactionCodesTable = {
   // camt.54, v11
@@ -239,13 +239,7 @@ function _generateTransactionObject (
   );
   const taxCurrency = _ (() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
 
-  if (!clientBvrNumber) {
-    return {
-      error: 'MissingBvrNumber',
-    };
-  }
-
-  if (bvrReferenceNumber) {
+  if (clientBvrNumber && bvrReferenceNumber) {
     return {
       transactionCode: transactionCode,
       bankTransactionCode: bankTransactionCode,

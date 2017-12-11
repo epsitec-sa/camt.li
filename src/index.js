@@ -107,7 +107,7 @@ function formatCredit (credit) {
   }
 }
 
-function getDetailsSummary (details, bvrsInfo) {
+function getDetailsSummary (details, clientBvrNumber, bvrsInfo) {
   const amount = formatAmount (_ (() => details.Amt[0]._));
   const currency = _ (() => details.Amt[0].$.Ccy);
   const chargesAmount = formatAmount (
@@ -141,7 +141,7 @@ function getDetailsSummary (details, bvrsInfo) {
         (debtorBank2.length ? '<br/>' + formatIBAN (debtorBank2) : '')
     : debtorBank2.length ? formatIBAN (debtorBank2) : '-';
 
-  if (reference) {
+  if (clientBvrNumber && reference) {
     bvrsInfo.count = bvrsInfo.count + 1; // It is an ESR transaction
   }
 
@@ -182,6 +182,7 @@ function getDetailsSummary (details, bvrsInfo) {
 }
 
 function getEntrySummary (entry, bvrsInfo) {
+  const clientBvrNumber = _ (() => entry.NtryRef[0]);
   const amount = formatAmount (_ (() => entry.Amt[0]._));
   const currency = _ (() => entry.Amt[0].$.Ccy);
   const chargesAmount = formatAmount (
@@ -206,7 +207,7 @@ function getEntrySummary (entry, bvrsInfo) {
 
   for (var entryDetails of entry.NtryDtls || []) {
     for (var txDetails of entryDetails.TxDtls || []) {
-      details += getDetailsSummary (txDetails, bvrsInfo);
+      details += getDetailsSummary (txDetails, clientBvrNumber, bvrsInfo);
     }
   }
 
