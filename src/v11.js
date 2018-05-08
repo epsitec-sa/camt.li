@@ -233,7 +233,7 @@ function _generateTransactionObject (
   );
   const currency = _ (() => details.Amt[0].$.Ccy);
   const amount = _ (() => parseFloat (details.Amt[0]._));
-  const submissionDate = _ (() => details.RltdDts[0].AccptncDtTm[0]);
+  const submissionDate = _ (() => details.RltdDts[0].AccptncDtTm[0]) || _ (() => details.RltdDts[0].IntrBkSttlmDt[0]);
   const taxAmount = _ (() =>
     parseFloat (details.Chrgs[0].TtlChrgsAndTaxAmt[0]._)
   );
