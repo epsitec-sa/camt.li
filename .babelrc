@@ -1,16 +1,4 @@
 // babel-env-disable
 {
-  "presets": [
-    "es2015"
-  ],
-  "plugins": [
-    "transform-decorators",
-    "transform-class-properties",
-    "transform-es2015-classes",
-    "transform-es2015-arrow-functions",
-    "transform-es2015-for-of",
-    "transform-es2015-template-literals",
-    "transform-es3-property-literals",
-    "transform-es3-member-expression-literals"
-  ]
+  "presets": ["env"]
 }
