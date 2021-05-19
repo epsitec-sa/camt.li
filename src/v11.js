@@ -203,30 +203,29 @@ function _generateTransactionTypeCodeV3(transaction) {
   return result !== "105" ? result : "104"; // Exception with 105
 }
 
-function _generateTransactionObject (
-  details,
-  clientBvrNumber,
-  reversalIndicator,
-  accountingDate,
-  processingDate
-) {
-  const transactionCode = _extractTransactionCode (
-    _ (() => details.Refs[0].Prtry[0].Tp[0])
-  );
-  const bankTransactionCode = _ (
-    () => details.BkTxCd[0].Domn[0].Fmly[0].SubFmlyCd[0]
-  );
-  const isCredit = _ (() => details.CdtDbtInd[0]) === 'CRDT' ? true : false;
-  const bvrReferenceNumber = _ (
-    () => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]
-  );
-  const currency = _ (() => details.Amt[0].$.Ccy);
-  const amount = _ (() => parseFloat (details.Amt[0]._));
-  const submissionDate = _ (() => details.RltdDts[0].AccptncDtTm[0]) || _ (() => details.RltdDts[0].IntrBkSttlmDt[0]);
-  const taxAmount = _ (() =>
-    parseFloat (details.Chrgs[0].TtlChrgsAndTaxAmt[0]._)
-  );
-  const taxCurrency = _ (() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
+function _generateTransactionObject(details, clientBvrNumber, reversalIndicator, accountingDate, processingDate) {
+  const transactionCode = _extractTransactionCode(_(() => details.Refs[0].Prtry[0].Tp[0]));
+  const bankTransactionCode = _(() => details.BkTxCd[0].Domn[0].Fmly[0].SubFmlyCd[0]);
+  const isCredit = _(() => details.CdtDbtInd[0]) === "CRDT" ? true : false;
+  const bvrReferenceNumber = _(() => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]);
+  const currency = _(() => details.Amt[0].$.Ccy);
+  const amount = _(() => parseFloat(details.Amt[0]._));
+  const submissionDate = _(() => details.RltdDts[0].AccptncDtTm[0]) || _(() => details.RltdDts[0].IntrBkSttlmDt[0]);
+  const taxAmount = _(() => parseFloat(details.Chrgs[0].TtlChrgsAndTaxAmt[0]._));
+  const taxCurrency = _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy);
+
+  if (!clientBvrNumber) {
+    const relatedQrIban = isCredit
+      ? _(() => details.RltdPties[0].CdtrAcct[0].Id[0].IBAN[0])
+      : _(() => details.RltdPties[0].DbtrAcct[0].Id[0].IBAN[0]);
+
+    if (isQrIban(relatedQrIban)) {
+      console.log(`The file contains the QR Iban (${relatedQrIban}) and cannot be converted`);
+      throw {
+        code: "QRIbanDetected",
+      };
+    }
+  }
 
   if (clientBvrNumber && bvrReferenceNumber) {
     return {

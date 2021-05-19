@@ -118,7 +118,27 @@ function writeStorageValue(name, value) {
     return;
   }
 
-  window.localStorage.setItem ('camtli_' + name, value);
+  window.localStorage.setItem("camtli_" + name, value);
+}
+
+function isQrIban(number) {
+  if (!number) {
+    return false;
+  }
+  const canonicalizedNumber = number.replace(/ /g, "");
+
+  if (canonicalizedNumber.length >= 10) {
+    const country = canonicalizedNumber.slice(0, 2);
+    if (country == "CH" || country == "LI") {
+      const clearing = parseInt(canonicalizedNumber.slice(4, 9));
+
+      if (clearing >= 30000 && clearing <= 31999) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 module.exports.escapeXml = escapeXml;
@@ -134,3 +154,5 @@ module.exports.getDate = getDate;
 module.exports.formatAmount = formatAmount;
 module.exports.padLeft = padLeft;
 module.exports.padRight = padRight;
+
+module.exports.isQrIban = isQrIban;

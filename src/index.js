@@ -579,6 +579,7 @@ function getDownloadLinkHtml() {
             <h3 id="messageTitleNoBvrs" >${T.errorMessageTitleNoBvrs}</h3>
             <p id="messageUnknown" >${T.errorMessageUnknown}</p><br />
             <p id="messageMissingRefs" >${T.errorMessageMissingRefs}</p>
+            <p id="messageQRIbanDetected" >${T.errorMessageQRIbanDetected}</p>
           </div>
         </div>
       </div>
