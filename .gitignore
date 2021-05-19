@@ -5,3 +5,4 @@ lib/*.js
 dist/index.js
 .vscode/
 package-lock.json
+lib/debug.log
