@@ -45,5 +45,5 @@ var T = {
   errorMessageUnknown: "Erreur inattendue (détails dans la fenêtre de log du navigateur)",
   errorMessageMissingRefs: "Type de paiement absent (par ex. propre compte, remboursement, etc.)",
   errorMessageQRIbanDetected:
-    "Certains fichiers contiennent des références liées à un IBAN QR. Il ne peuvent pas être convertis au format V11. Utilisez plutôt Crésus pour gérer vos factures et vos encaissements.",
+    "Ce fichier contient des références liées à un IBAN QR. Ces références ne peuvent pas être converties au format V11. Utilisez plutôt Crésus pour gérer vos factures et vos encaissements.",
 };
