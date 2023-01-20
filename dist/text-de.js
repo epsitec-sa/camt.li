@@ -15,7 +15,7 @@ var T = {
   openBalance: "Eröffnungssaldo",
   closeBalance: "Abschlusssaldo",
   dateValuta: "Valuta",
-  dateBooking: "Bunchungsdatum",
+  dateBooking: "Buchungsdatum",
   totalCharge: "Gesamtkosten",
   total: "Gesamtbetrag",
   movement: "Bewegung",
