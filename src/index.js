@@ -21,6 +21,8 @@ const camtXsds = {
   "54V2": "urn:iso:std:iso:20022:tech:xsd:camt.054.001.02",
   "53V4": "urn:iso:std:iso:20022:tech:xsd:camt.053.001.04",
   "54V4": "urn:iso:std:iso:20022:tech:xsd:camt.054.001.04",
+  "53V8": "urn:iso:std:iso:20022:tech:xsd:camt.053.001.08",
+  "54V8": "urn:iso:std:iso:20022:tech:xsd:camt.054.001.08",
 };
 
 let v11Xmls = [];
@@ -112,7 +114,7 @@ function getDetailsSummary(details, clientBvrNumber, bvrsInfo) {
   const chargesCurrency =
     _(() => details.Chrgs[0].TtlChrgsAndTaxAmt[0].$.Ccy) || _(() => details.Chrgs[0].Rcrd[0].Amt[0].$.Ccy);
   const credit = _(() => details.CdtDbtInd[0]);
-  const debtorName = _(() => details.RltdPties[0].Dbtr[0].Nm[0]);
+  const debtorName = _(() => details.RltdPties[0].Dbtr[0].Nm[0]) || _(() => details.RltdPties[0].Dbtr[0].Pty[0].Nm[0]);
   const debtorFinName = _(() => details.RltdAgts[0].DbtrAgt[0].FinInstnId[0].Nm[0]);
   const reference = _(() => details.RmtInf[0].Strd[0].CdtrRefInf[0].Ref[0]);
   const paymentMode = formatBankTransactionType(_(() => details.BkTxCd[0].Domn[0].Fmly[0].SubFmlyCd[0]));

@@ -4,6 +4,8 @@ var T = {
   camt54V2: "Fichier camt.054 (V2)",
   camt53V4: "Fichier camt.053 (V4)",
   camt54V4: "Fichier camt.054 (V4)",
+  camt53V8: "Fichier camt.053 (V8)",
+  camt54V8: "Fichier camt.054 (V8)",
   fileName: "Fichier",
   creationDate: "Date de création",
   customerAccount: "Compte client",
